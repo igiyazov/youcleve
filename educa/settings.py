@@ -25,7 +25,7 @@ SECRET_KEY = 'pm0_l$n%oy9$z7c5%+ae6#8#9rl_p#8v0)l6ngc6j!2#dd7sok'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -48,7 +48,8 @@ INSTALLED_APPS = [
 
 
     'educa.apps.courses',
-    'educa.apps.base'
+    'educa.apps.base',
+    'drf_yasg'
 ]
 
 MIDDLEWARE = [
@@ -156,9 +157,17 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 2
 }
 
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:8080",
-    "http://127.0.0.1:8000"
-]
+
+
+# CORS_ORIGIN_WHITELIST = [
+#     "http://localhost:8080",
+#     "http://192.168.0.104",
+#     "http://192.168.0.104:8082",
+#     "http://0.0.0.0:8000"    
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True

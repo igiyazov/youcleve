@@ -19,7 +19,7 @@ class CustomUserListView(APIView):
         return Response(serializer.data)
 
 class CustomUserDetailView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     def get(self, request, pk):
         categorie = CustomUser.objects.get(pk = pk)
         serializer = CustomUserDetailSerializer(categorie)

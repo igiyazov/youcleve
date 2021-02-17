@@ -8,6 +8,8 @@ from rest_framework_simplejwt.views import (
                                             TokenRefreshView,
                                             )
 
+from .yasg import urlpatterns as doc_urls
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('courses/', include('educa.apps.courses.urls')),
@@ -18,6 +20,8 @@ urlpatterns = [
 
     path('api/accounts/', include('educa.apps.authentication.urls'))
 ]
+
+urlpatterns += doc_urls
 
 # if settings.Debug:
 urlpatterns += static(settings.MEDIA_URL, 

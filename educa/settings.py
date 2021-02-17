@@ -26,7 +26,7 @@ SECRET_KEY = 'pm0_l$n%oy9$z7c5%+ae6#8#9rl_p#8v0)l6ngc6j!2#dd7sok'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['gentle-reef-53739.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['gentle-reef-53739.herokuapp.com', '127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -62,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'educa.urls'

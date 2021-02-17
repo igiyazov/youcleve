@@ -26,7 +26,7 @@ SECRET_KEY = 'pm0_l$n%oy9$z7c5%+ae6#8#9rl_p#8v0)l6ngc6j!2#dd7sok'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://gentle-reef-53739.herokuapp.com/, 127.0.0.1']
+ALLOWED_HOSTS = ['gentle-reef-53739.herokuapp.com, 127.0.0.1']
 
 
 # Application definition
@@ -111,7 +111,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-# postgres://rwtchchpwwiowz:586532ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb@ec2-18-204-101-137.compute-1.amazonaws.com:5432/dd9udtfmrvqdnd
+# postgres://rwtchchpwwiowz:58653 2ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb@ec2-18-204-101-137.compute-1.amazonaws.com:5432/dd9udtfmrvqdnd
 
 # DATABASES = {
 #     'default': {

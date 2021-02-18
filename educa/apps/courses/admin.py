@@ -31,7 +31,6 @@ class LessonAdmin(admin.ModelAdmin):
 
 @admin.register(Level)
 class LevelAdmin(admin.ModelAdmin):
-    list_display = ['key', 'body']
+    list_display = ['key', 'body', 'draft']
     list_filter = ['body']
     search_fields = ['body']
-    

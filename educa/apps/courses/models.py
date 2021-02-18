@@ -1,11 +1,13 @@
 from django.db import models
 from django.db.models.deletion import SET_DEFAULT
+from django.db.models.fields import BooleanField
 from educa.apps.authentication.models import CustomUser
 from educa.apps.base.models import TimestampedModel
 
 class Level(models.Model):
     key = models.CharField(max_length=5)
     body = models.CharField(max_length=50)
+    draft = BooleanField(default=True)
 
 class Category(models.Model):
     title = models.CharField(max_length=200)

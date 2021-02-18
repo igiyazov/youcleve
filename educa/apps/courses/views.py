@@ -115,5 +115,5 @@ class LessonDetailView(APIView):
 class LevelListView(APIView):
     def get(self, request):
         levels = Level.objects.all()
-        serializer = LevelListSerializer(levels)
+        serializer = LevelListSerializer(levels, many=True)
         return Response(serializer.data)

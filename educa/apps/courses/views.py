@@ -1,14 +1,15 @@
 from django.shortcuts import render
+from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .pagination import PaginationHandlerMixin
-from .models import (Category, Subcategory, Course, Lesson)
+from .models import (Category, Level, Subcategory, Course, Lesson)
 from .serializers import (CategoryListSerializer,
                         CategoryDetailSerializer, 
                         CourseDetailSerializer, 
                         CourseListSerializer, 
-                        LessonListSerializer, 
+                        LessonListSerializer, LevelListSerializer, 
                         SubcategoryListSerializer)
 
 
@@ -108,4 +109,11 @@ class LessonDetailView(APIView):
         lesson = Lesson.objects.filter(draft=False)\
                                 .filter(slug=slug) #TODO написать кастомный менеджр
         serializer = LessonDetailView(lesson)
+        return Response(serializer.data)
+
+
+class LevelListView(APIView):
+    def get(self, request):
+        levels = Level.objects.all()
+        serializer = LevelListSerializer(levels)
         return Response(serializer.data)

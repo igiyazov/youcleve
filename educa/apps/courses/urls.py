@@ -5,7 +5,7 @@ from .views import (CategoryListView,
                     CourseDetailView, 
                     CourseListView,  
                     LessonDetailView, 
-                    LessonListView, 
+                    LessonListView, LevelListView, 
                     SubcategoryListView
                     )
 
@@ -20,5 +20,5 @@ urlpatterns = [
     path('subcategories/<slug:slug>', SubcategoryListView.as_view(), name='subcategory_list'),
     path('lessons/<slug:slug>', LessonListView.as_view(), name='lesson_list'),
     path('lesson/<slug:slug>', LessonDetailView.as_view(), name='lesson_detail'),
-    
+    path('levels/', LevelListView.as_view(), name='level_list')
 ]

@@ -1,6 +1,11 @@
 from django.db import models
+from django.db.models.deletion import SET_DEFAULT
 from educa.apps.authentication.models import CustomUser
 from educa.apps.base.models import TimestampedModel
+
+class Level(models.Model):
+    key = models.CharField(max_length=5)
+    body = models.CharField(max_length=50)
 
 class Category(models.Model):
     title = models.CharField(max_length=200)
@@ -30,16 +35,6 @@ class Subcategory(models.Model):
         return self.title
 
 class Course(TimestampedModel):
-
-    CHILD = 'CH'
-    BEGGINER = 'BG'
-    ADVANCED = 'AD'
-    FOR_LEVEL = [
-        (CHILD, 'Для детей'),
-        (BEGGINER, 'Для начинающих'),
-        (ADVANCED, 'Для продвинутых'),
-    ]
-
     owner = models.ForeignKey(CustomUser, 
                                 related_name='courses_created', 
                                 on_delete=models.CASCADE)
@@ -54,7 +49,12 @@ class Course(TimestampedModel):
     photo = models.ImageField(null=True, upload_to=f'courses/{title}')
     likes = models.PositiveIntegerField(default=0)
     price = models.PositiveIntegerField(null=True)
-    level = models.CharField(choices=FOR_LEVEL, default=BEGGINER, max_length=2)
+    level = models.ForeignKey(
+        Level,
+        related_name='courses',
+        on_delete=models.SET_NULL,
+        null=True
+    )
     overview = models.TextField()
     draft = models.BooleanField(default=True)
 
@@ -73,4 +73,3 @@ class Lesson(TimestampedModel):
     photo = models.ImageField(upload_to=f'lesson/{title}', null=True, blank=True)
     overview = models.TextField(null=True, blank=True)
     draft = models.BooleanField(default=True)
-

@@ -1,7 +1,7 @@
 from django.db.models import fields
 from rest_framework import serializers
 
-from .models import (Category, Subcategory, Course, Lesson)
+from .models import (Category, Subcategory, Course, Lesson, Level)
 
 class CategoryListSerializer(serializers.ModelSerializer):
 
@@ -38,5 +38,10 @@ class LessonListSerializer(serializers.ModelSerializer):
 class LessonDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lesson
+        fields = '__all__'
+
+class LevelListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Level
         fields = '__all__'
 

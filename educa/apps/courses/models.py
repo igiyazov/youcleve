@@ -30,6 +30,16 @@ class Subcategory(models.Model):
         return self.title
 
 class Course(TimestampedModel):
+
+    CHILD = 'CH'
+    BEGGINER = 'BG'
+    ADVANCED = 'AD'
+    FOR_LEVEL = [
+        (CHILD, 'Для детей'),
+        (BEGGINER, 'Для начинающих'),
+        (ADVANCED, 'Для продвинутых'),
+    ]
+
     owner = models.ForeignKey(CustomUser, 
                                 related_name='courses_created', 
                                 on_delete=models.CASCADE)
@@ -44,6 +54,7 @@ class Course(TimestampedModel):
     photo = models.ImageField(null=True, upload_to=f'courses/{title}')
     likes = models.PositiveIntegerField(default=0)
     price = models.PositiveIntegerField(null=True)
+    level = models.CharField(choices=FOR_LEVEL, default=BEGGINER, max_length=2)
     overview = models.TextField()
     draft = models.BooleanField(default=True)
 

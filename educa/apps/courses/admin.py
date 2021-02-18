@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course,Category, Lesson, Subcategory
+from .models import Course,Category, Lesson, Level, Subcategory
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
@@ -28,3 +28,10 @@ class LessonAdmin(admin.ModelAdmin):
     list_filter = ['title']
     search_fields = ['title', 'description']
     prepopulated_fields = {'slug': ('title',)}
+
+@admin.register(Level)
+class LevelAdmin(admin.ModelAdmin):
+    list_display = ['key', 'body']
+    list_filter = ['body']
+    search_fields = ['body']
+    

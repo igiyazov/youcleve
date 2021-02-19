@@ -3,7 +3,7 @@ from django.urls import path
 from .views import (CategoryListView,
                     CategoryDetailView, 
                     CourseDetailView, 
-                    CourseListView,  
+                    CourseListView, CourseListViewCategories,  
                     LessonDetailView, 
                     LessonListView, LevelListView, 
                     SubcategoryListView
@@ -12,6 +12,7 @@ from .views import (CategoryListView,
 urlpatterns = [
     path('categories/', CategoryListView.as_view(), name='category_list'),
     path('category/<int:pk>', CategoryDetailView.as_view(), name='category_detail'),
+    path('courses/category/<slug:slug>', CourseListViewCategories.as_view(), name='category_courses'),
     path('courses/<slug:slug>', CourseListView.as_view(), name='course_list'),
     path('courses/', CourseListView.as_view(), name='all_course_list'),
     # path('courses/recomended', CourseRecomendedListView.as_view(), name='course_recomended_list'),

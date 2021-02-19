@@ -42,10 +42,16 @@ class Subcategory(models.Model):
 class Course(TimestampedModel):
     owner = models.ForeignKey(CustomUser, 
                                 related_name='courses_created', 
-                                on_delete=models.CASCADE)
+                                on_delete=models.SET_NULL, 
+                                null=True)
+    category = models.ForeignKey(Category, 
+                                related_name='courses', 
+                                on_delete=models.SET_NULL,
+                                null=True)
     subcategory = models.ForeignKey(Subcategory, 
                                 related_name='courses', 
-                                on_delete=models.CASCADE)
+                                on_delete=models.SET_NULL,
+                                null=True)
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True)
     course_duration = models.DurationField(null=True)
@@ -58,7 +64,8 @@ class Course(TimestampedModel):
         Level,
         related_name='courses',
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        blank=True
     )
     overview = models.TextField()
     draft = models.BooleanField(default=True)

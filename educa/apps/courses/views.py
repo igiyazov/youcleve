@@ -26,6 +26,24 @@ class CategoryDetailView(APIView):
         serializer = CategoryDetailSerializer(categorie)
         return Response(serializer.data)
 
+class CourseListViewCategories(APIView, PaginationHandlerMixin):
+    courses = Course.objects.filter(draft=False)
+    def get(self, request, slug=None):
+        filtering = request.GET.get('filter')
+        self.courses = self.courses.filter(category__slug=slug)
+        if filtering == 'recomended':
+            self.courses = self.courses.order_by('-likes')
+        elif filtering == 'popular':
+            self.courses = self.courses.order_by('-views')
+
+        page = self.paginate_queryset(self.courses)
+        if page is not None:
+            serializer = CourseListSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = CourseListSerializer(self.courses, many=True)
+        return Response(serializer.data)
+
 class CourseListView(APIView, PaginationHandlerMixin):
     courses = Course.objects.filter(draft=False) #TODO написать кастомный менеджр
     

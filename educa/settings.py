@@ -112,7 +112,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
-# postgres://rwtchchpwwiowz:58653 2ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb@ec2-18-204-101-137.compute-1.amazonaws.com:5432/dd9udtfmrvqdnd
+# postgres://rwtchchpwwiowz:586532ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb@ec2-18-204-101-137.compute-1.amazonaws.com:5432/dd9udtfmrvqdnd
 
 # DATABASES = {
 #     'default': {

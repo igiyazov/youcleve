@@ -4,3 +4,8 @@ Spentu/
 newform/
 frontend/node_modules/
 .DS_Store
+backup.sql
+educa.dump
+latest.dump
+local.sql
+my_database.sql

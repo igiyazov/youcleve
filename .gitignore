@@ -9,3 +9,10 @@ educa.dump
 latest.dump
 local.sql
 my_database.sql
+
+#educa
+__pycache__
+**/__pycache__/
+**/__pycache__
+
+educa/apps/activity/

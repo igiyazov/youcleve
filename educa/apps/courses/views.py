@@ -97,9 +97,9 @@ class CourseListView(APIView, PaginationHandlerMixin):
 
 class CourseDetailView(APIView):
     """Информация об одном курсу"""
-    def get(self, request, slug):
+    def get(self, request, pk):
         courses = Course.objects.filter(draft=False)\
-                                .filter(slug=slug) #TODO написать кастомный менеджр
+                                .get(pk=pk) #TODO написать кастомный менеджр
         serializer = CourseDetailSerializer(courses)
         return Response(serializer.data)
 

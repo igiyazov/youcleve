@@ -47,7 +47,7 @@ class CourseListViewCategories(APIView, PaginationHandlerMixin):
 class CourseListView(APIView, PaginationHandlerMixin):
     courses = Course.objects.filter(draft=False) #TODO написать кастомный менеджр
     
-    """Запрос возвращает все курсы"""
+    """Запрос возвращает все курсы отсортировав их, либо курсы определенной субкатегории"""
     # def get(self, request,slug=None):
     #     if slug == 'recomended':
     #         self.courses = self.courses.order_by('-likes')

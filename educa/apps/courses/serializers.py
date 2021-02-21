@@ -1,5 +1,9 @@
 from django.db.models import fields
 from rest_framework import serializers
+from .models import (
+                    Course,
+                    Lesson,
+                    )
 
 from .models import (Category, Subcategory, Course, Lesson, Level)
 
@@ -16,6 +20,9 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CourseListSerializer(serializers.ModelSerializer):
+    lessons_count = serializers.SerializerMethodField()
+    def get_lessons_count(self, obj):
+        return Course.filtered.get(pk=obj.id).lessons.count()
     class Meta:
         model = Course
         fields = '__all__'

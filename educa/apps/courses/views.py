@@ -26,7 +26,7 @@ class CourseListView(APIView, PaginationHandlerMixin):
     """Запрос возвращает все курсы отсортировав их, либо курсы определенной субкатегории"""
  
     def get(self, request, category=None, subcategory=None):
-        courses = None
+        courses = Course.filtered.all()
         if category:
             courses = Course.filtered.filter(category__slug=category)
         if subcategory:

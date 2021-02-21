@@ -2,11 +2,11 @@ from django.shortcuts import render
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from .services import get_filtered
 
 from .pagination import PaginationHandlerMixin
 from .models import (Category, Level, Subcategory, Course, Lesson)
 from .serializers import (CategoryListSerializer,
-                        CategoryDetailSerializer, 
                         CourseDetailSerializer, 
                         CourseListSerializer, 
                         LessonListSerializer, LevelListSerializer, 
@@ -20,86 +20,31 @@ class CategoryListView(APIView):
         serializer = CategoryListSerializer(categories, many=True)
         return Response(serializer.data)
 
-class CategoryDetailView(APIView):
-    def get(self, request, pk):
-        categorie = Category.objects.get(pk = pk)
-        serializer = CategoryDetailSerializer(categorie)
-        return Response(serializer.data)
-
-class CourseListViewCategories(APIView, PaginationHandlerMixin):
-    courses = Course.objects.filter(draft=False)
-    def get(self, request, slug=None):
-        filtering = request.GET.get('filter')
-        self.courses = self.courses.filter(category__slug=slug)
-        if filtering == 'recomended':
-            self.courses = self.courses.order_by('-likes')
-        elif filtering == 'popular':
-            self.courses = self.courses.order_by('-views')
-
-        page = self.paginate_queryset(self.courses)
-        if page is not None:
-            serializer = CourseListSerializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = CourseListSerializer(self.courses, many=True)
-        return Response(serializer.data)
 
 class CourseListView(APIView, PaginationHandlerMixin):
-    courses = Course.objects.filter(draft=False) #TODO написать кастомный менеджр
     
     """Запрос возвращает все курсы отсортировав их, либо курсы определенной субкатегории"""
-    # def get(self, request,slug=None):
-    #     if slug == 'recomended':
-    #         self.courses = self.courses.order_by('-likes')
-    #     elif slug == 'popular':
-    #         self.courses = self.courses.order_by('-views')
-    #     elif slug:
-    #         self.courses = self.courses.filter(subcategory__slug=slug)
-    #     result_page = self.pagination_class().paginate_queryset(self.courses, request)
-    #     serializer = CourseListSerializer(result_page, many=True)
-    #     return Response(serializer.data)
-
-
-    def get(self, request, slug=None):
-
-        if slug == 'recomended':
-            self.courses = self.courses.order_by('-likes')
-        elif slug == 'popular':
-            self.courses = self.courses.order_by('-views')
-        elif slug:
-            self.courses = self.courses.filter(subcategory__slug=slug)
-
-        page = self.paginate_queryset(self.courses)
+ 
+    def get(self, request, category=None, subcategory=None):
+        courses = None
+        if category:
+            courses = Course.filtered.filter(category__slug=category)
+        if subcategory:
+            courses = Course.filtered.filter(subcategory__slug=subcategory)
+        
+        courses = get_filtered(request, courses)
+        page = self.paginate_queryset(courses)
         if page is not None:
             serializer = CourseListSerializer(page, many=True)
             return self.get_paginated_response(serializer.data)
 
-        serializer = CourseListSerializer(self.courses, many=True)
+        serializer = CourseListSerializer(courses, many=True)
         return Response(serializer.data)
-
-# #TODO Переписать
-# class CourseRecomendedListView(APIView):
-#     """Запрос возвращает рекомендованные курсы"""
-#     def get(self, request):
-#         courses = Course.objects.filter(draft=False)
-#                                 # .order_by('likes')#TODO написать кастомный менеджр
-#         serializer = CourseListSerializer(courses, many=True)
-#         return Response(serializer.data)
-
-# #TODO Переписать
-# class CoursePopularListView(APIView):
-#     """Запрос возвращает популярные курсы"""
-#     def get(self, request):
-#         courses = Course.objects.filter(draft=False)\
-#                                 .order_by('views')#TODO написать кастомный менеджр
-#         serializer = CourseListSerializer(courses, many=True)
-#         return Response(serializer.data)
 
 class CourseDetailView(APIView):
     """Информация об одном курсу"""
     def get(self, request, pk):
-        courses = Course.objects.filter(draft=False)\
-                                .get(pk=pk) #TODO написать кастомный менеджр
+        courses = Course.filtered.get(pk=pk)
         serializer = CourseDetailSerializer(courses)
         return Response(serializer.data)
 

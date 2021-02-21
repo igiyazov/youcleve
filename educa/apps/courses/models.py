@@ -4,6 +4,41 @@ from django.db.models.fields import BooleanField
 from educa.apps.authentication.models import CustomUser
 from educa.apps.base.models import TimestampedModel
 
+class FilteredQuerySet(models.QuerySet):
+    def recommended(self):
+        return self.order_by('-likes')
+
+    def popular(self):
+        return self.order_by('-views')
+    
+    def for_children(self):
+        return self.filter(level__key='CH')
+
+    def for_begginer(self):
+        return self.filter(level__key='BG')
+
+    def for_advanced(self):
+        return self.filter(level__key='AD')
+
+class FilteredManager(models.Manager):
+    def get_queryset(self):
+        return FilteredQuerySet(self.model, using=self._db).filter(draft=False)
+
+    def recommended(self):
+        return self.get_queryset().recommended()
+
+    def popular(self):
+        return self.get_queryset().popular()
+    
+    def for_children(self):
+        return self.get_queryset().for_children()
+
+    def for_begginer(self):
+        return self.get_queryset().for_begginer()
+
+    def for_advanced(self):
+        return self.get_queryset().for_advanced()
+
 class Level(models.Model):
     key = models.CharField(max_length=5)
     body = models.CharField(max_length=50)
@@ -73,6 +108,9 @@ class Course(TimestampedModel):
 
     def __str__(self):
         return self.title
+
+    objects = models.Manager()
+    filtered = FilteredManager()
 
 class Lesson(TimestampedModel):
     title = models.CharField(max_length=200)

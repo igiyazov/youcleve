@@ -1,3 +1,4 @@
+from educa.apps.activity.services import all_likes_count
 from django.db.models import fields
 from rest_framework import serializers
 from .models import (
@@ -21,8 +22,13 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
 class CourseListSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
     def get_lessons_count(self, obj):
         return Course.filtered.get(pk=obj.id).lessons.count()
+
+    def get_likes_count(self, obj):
+        return all_likes_count(obj)
+
     class Meta:
         model = Course
         fields = '__all__'

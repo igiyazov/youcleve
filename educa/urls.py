@@ -12,6 +12,7 @@ from .yasg import urlpatterns as doc_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/activity/', include('educa.apps.activity.urls')),
     path('api/', include('educa.apps.courses.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),

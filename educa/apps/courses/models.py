@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.aggregates import Sum
 from django.db.models.deletion import SET_DEFAULT
 from django.db.models.fields import BooleanField
 from educa.apps.authentication.models import CustomUser
@@ -10,6 +11,10 @@ class FilteredQuerySet(models.QuerySet):
 
     def popular(self):
         return self.order_by('-views')
+
+    def duration(self):
+        return self.lessons.aggregate(duration=Sum('duration'))\
+                            .order_by('duration')
     
     def for_children(self):
         return self.filter(level__key='CH')
@@ -29,6 +34,9 @@ class FilteredManager(models.Manager):
 
     def popular(self):
         return self.get_queryset().popular()
+
+    def duration(self):
+        return self.get_queryset().duration()
     
     def for_children(self):
         return self.get_queryset().for_children()

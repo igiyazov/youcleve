@@ -1,3 +1,4 @@
+from django.db import models
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,7 +10,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import CustomUser
 from .serializers import (CustomUserListSerializer,
                         CustomUserDetailSerializer, 
-                        MyTokenObtainPairSerializer
+                        MyTokenObtainPairSerializer, ProfileDetailSerializer
                         )
 
 class CustomUserListView(APIView):
@@ -19,10 +20,10 @@ class CustomUserListView(APIView):
         return Response(serializer.data)
 
 class CustomUserDetailView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
     def get(self, request, pk):
-        categorie = CustomUser.objects.get(pk = pk)
-        serializer = CustomUserDetailSerializer(categorie)
+        user = CustomUser.objects.get(pk = pk)
+        serializer = CustomUserDetailSerializer(user)
         return Response(serializer.data)
 
     def post(self, request):
@@ -48,6 +49,19 @@ class CustomUserLogoutView(APIView):
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
+class ProfileDetailView(APIView):
+    def get(self, request, pk):
+        user = CustomUser.objects.get(pk = pk)
+        serializer_profile = None
+        if user:
+            profile = user.profile
+            serializer_profile = ProfileDetailSerializer(profile)
+        serializer_user = CustomUserDetailSerializer(user)
+        result = serializer_user.data
+        if serializer_profile:
+            result = {**serializer_user.data, **serializer_profile.data}
+        return Response(result)
 
 
 class MyObtainTokenPairView(TokenObtainPairView):

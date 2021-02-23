@@ -7,6 +7,8 @@ def get_filtered(request,model):
         model = model.recommended()
     elif courses_filter and courses_filter == 'popular':
         model = model.popular()
+    elif courses_filter and courses_filter == 'duration':
+        model = model.duration()
 
     if courses_level and courses_level == 'CH':
         model = model.for_children()

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
+from django.db.models.fields import CharField
 
 
 class CustomUserManager(BaseUserManager):
@@ -74,4 +75,13 @@ class Profile(models.Model):
                                         on_delete=models.CASCADE)
     username = models.CharField(max_length=100)
     company_name = models.CharField(max_length=200)
+    photo = models.ImageField(upload_to='profile/', null=True)
+    promocode = models.CharField(max_length=20, blank=True, default='')
+    bonus = models.PositiveIntegerField(default=0)
+    bill_number = models.CharField(max_length=50, default='', blank=True)
+    geo = models.TextField(blank=True, null=True)
+    site = models.TextField(blank=True, null=True)
+
+    followings = models.ManyToManyField("self", related_name="followers")
+
 

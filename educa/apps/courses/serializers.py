@@ -34,6 +34,13 @@ class CourseListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CourseDetailSerializer(serializers.ModelSerializer):
+    lessons_count = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
+    def get_lessons_count(self, obj):
+        return Course.filtered.get(pk=obj.id).lessons.count()
+
+    def get_likes_count(self, obj):
+        return all_likes_count(obj)
     class Meta:
         model = Course
         fields = '__all__'

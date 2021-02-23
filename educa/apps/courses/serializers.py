@@ -1,3 +1,4 @@
+from django.db.models.aggregates import Sum
 from educa.apps.activity.services import all_likes_count
 from django.db.models import fields
 from rest_framework import serializers
@@ -23,11 +24,21 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 class CourseListSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
+    duration = serializers.SerializerMethodField()
     def get_lessons_count(self, obj):
         return Course.filtered.get(pk=obj.id).lessons.count()
 
     def get_likes_count(self, obj):
         return all_likes_count(obj)
+
+    def get_duration(self, obj):
+        time = Course.filtered.get(pk=obj.id)\
+                    .lessons\
+                    .aggregate(dur=Sum('duration')).get('dur', 0)
+        if time:
+            time = time.total_seconds()
+        return time
+            
 
     class Meta:
         model = Course
@@ -36,11 +47,18 @@ class CourseListSerializer(serializers.ModelSerializer):
 class CourseDetailSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
+    duration = serializers.SerializerMethodField()
     def get_lessons_count(self, obj):
         return Course.filtered.get(pk=obj.id).lessons.count()
 
     def get_likes_count(self, obj):
         return all_likes_count(obj)
+
+    def get_duration(self, obj):
+        return Course.filtered.get(pk=obj.id)\
+                    .lessons\
+                    .aggregate(dur=Sum('duration'))['dur']\
+                    .total_seconds()
     class Meta:
         model = Course
         fields = '__all__'

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
-from django.db.models.fields import CharField
+# from educa.apps.courses.models import Course
 
 
 class CustomUserManager(BaseUserManager):
@@ -37,6 +37,7 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser):
+    username = models.CharField(max_length=100, blank=True)
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
@@ -73,15 +74,17 @@ class Profile(models.Model):
     custom_user = models.OneToOneField(CustomUser,
                                         related_name='profile',
                                         on_delete=models.CASCADE)
-    username = models.CharField(max_length=100)
-    company_name = models.CharField(max_length=200)
+    # username = models.CharField(max_length=100)
+    # company_name = models.CharField(max_length=200)
     photo = models.ImageField(upload_to='profile/', null=True)
     promocode = models.CharField(max_length=20, blank=True, default='')
     bonus = models.PositiveIntegerField(default=0)
     bill_number = models.CharField(max_length=50, default='', blank=True)
     geo = models.TextField(blank=True, null=True)
     site = models.TextField(blank=True, null=True)
+    follow_end = models.DateTimeField(blank=True, null=True)
 
-    followings = models.ManyToManyField("self", related_name="followers")
+    saved = models.ManyToManyField(to='courses.Course', related_name="saved_by")
+    followings = models.ManyToManyField("self", related_name="followers", symmetrical=False)
 
 

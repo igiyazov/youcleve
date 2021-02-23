@@ -13,7 +13,8 @@ class CustomUserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ['password']
 
 class ProfileDetailSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
@@ -24,7 +25,8 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
         return Profile.objects.get(pk=obj.id).followings.count()
     class Meta:
         model = Profile
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ['followings']
 
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer

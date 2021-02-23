@@ -12,5 +12,5 @@ urlpatterns = [
     path('user/logout', CustomUserLogoutView.as_view(), name='auth_logout'),
     path('user/login/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
     path('user/login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('profile/<int:id>', ProfileDetailView.as_view(), name='profile_detail'),
+    path('profile/<int:pk>', ProfileDetailView.as_view(), name='profile_detail'),
 ]

@@ -13,7 +13,7 @@ class FilteredQuerySet(models.QuerySet):
         return self.order_by('-views')
 
     def duration(self):
-        return self.lessons.aggregate(duration=Sum('duration'))\
+        return self.annotate(duration=Sum('lessons__duration'))\
                             .order_by('duration')
     
     def for_children(self):

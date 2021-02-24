@@ -1,7 +1,9 @@
+from educa.apps.authentication.services import profile_info
 from django.db import models
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
@@ -67,3 +69,9 @@ class ProfileDetailView(APIView):
 class MyObtainTokenPairView(TokenObtainPairView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = MyTokenObtainPairSerializer
+
+@api_view(['GET'])
+def get_profile_info(request, pk, param):
+    user = CustomUser.objects.get(pk=pk)
+    data = profile_info(user, param)
+    return Response(data)

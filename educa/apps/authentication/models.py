@@ -88,3 +88,5 @@ class Profile(models.Model):
     followings = models.ManyToManyField("self", related_name="followers", symmetrical=False, null=True, blank=True)
 
 
+    def __str__(self):
+        return self.custom_user.username

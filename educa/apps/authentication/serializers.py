@@ -26,12 +26,12 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
         return Profile.objects.get(pk=obj.id).followings.count()
 
     def get_courses_count(self, obj):
-        return CustomUser.objects.get(pk=obj.id).courses_created.count()
+        return Profile.objects.get(pk=obj.id).custom_user.courses_created.count()
 
     class Meta:
         model = Profile
         # fields = '__all__'
-        exclude = ['followings']
+        exclude = ['followings', 'saved']
 
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer

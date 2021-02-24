@@ -19,10 +19,15 @@ class CustomUserDetailSerializer(serializers.ModelSerializer):
 class ProfileDetailSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
     followings_count = serializers.SerializerMethodField()
+    courses_count = serializers.SerializerMethodField()
     def get_followers_count(self, obj):
         return Profile.objects.get(pk=obj.id).followers.count()
     def get_followings_count(self, obj):
         return Profile.objects.get(pk=obj.id).followings.count()
+
+    def get_courses_count(self, obj):
+        return CustomUser.objects.get(pk=obj.id).courses_created.count()
+
     class Meta:
         model = Profile
         # fields = '__all__'

@@ -12,9 +12,13 @@ class FilteredQuerySet(models.QuerySet):
     def popular(self):
         return self.order_by('-views')
 
-    def duration(self):
-        return self.annotate(duration=Sum('lessons__duration'))\
-                            .order_by('duration')
+    def duration(self, arrow):
+        res = self.annotate(duration=Sum('lessons__duration'))
+        if arrow == 'UP':
+            res = res.order_by('duration')
+        else:
+            res = res.order_by('-duration')
+        return res
     
     def for_children(self):
         return self.filter(level__key='CH')
@@ -35,8 +39,8 @@ class FilteredManager(models.Manager):
     def popular(self):
         return self.get_queryset().popular()
 
-    def duration(self):
-        return self.get_queryset().duration()
+    def duration(self, arrow):
+        return self.get_queryset().duration(arrow)
     
     def for_children(self):
         return self.get_queryset().for_children()

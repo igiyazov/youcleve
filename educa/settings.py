@@ -91,28 +91,28 @@ WSGI_APPLICATION = 'educa.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 # LOCAL
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'educadb',
-#         'USER': 'educarole',
-#         'PASSWORD': 'ruslan010110',
-#         'HOST': '127.0.0.1',
-#         'PORT': '5432',
-#     }
-# }
-
-# DEPLOY
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dd9udtfmrvqdnd',
-        'USER': 'rwtchchpwwiowz',
-        'PASSWORD': '586532ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb',
-        'HOST': 'ec2-18-204-101-137.compute-1.amazonaws.com',
+        'NAME': 'educadb',
+        'USER': 'educarole',
+        'PASSWORD': 'ruslan010110',
+        'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }
+
+# DEPLOY
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'dd9udtfmrvqdnd',
+#         'USER': 'rwtchchpwwiowz',
+#         'PASSWORD': '586532ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb',
+#         'HOST': 'ec2-18-204-101-137.compute-1.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
 # postgres://rwtchchpwwiowz:586532ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb@ec2-18-204-101-137.compute-1.amazonaws.com:5432/dd9udtfmrvqdnd
 
 # DATABASES = {

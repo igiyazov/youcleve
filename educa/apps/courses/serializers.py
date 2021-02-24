@@ -25,6 +25,7 @@ class CourseListSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
     duration = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField()
     def get_lessons_count(self, obj):
         return Course.filtered.get(pk=obj.id).lessons.count()
 
@@ -38,6 +39,9 @@ class CourseListSerializer(serializers.ModelSerializer):
         if time:
             time = time.total_seconds()
         return time
+
+    def get_username(self, obj):
+        return Course.filtered.get(pk=obj.id).owner.username
             
 
     class Meta:
@@ -48,6 +52,7 @@ class CourseDetailSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
     duration = serializers.SerializerMethodField()
+    username = serializers.SerializerMethodField()
     def get_lessons_count(self, obj):
         return Course.filtered.get(pk=obj.id).lessons.count()
 
@@ -55,10 +60,15 @@ class CourseDetailSerializer(serializers.ModelSerializer):
         return all_likes_count(obj)
 
     def get_duration(self, obj):
-        return Course.filtered.get(pk=obj.id)\
+        time = Course.filtered.get(pk=obj.id)\
                     .lessons\
-                    .aggregate(dur=Sum('duration'))['dur']\
-                    .total_seconds()
+                    .aggregate(dur=Sum('duration')).get('dur', 0)
+        if time:
+            time = time.total_seconds()
+        return time
+
+    def get_username(self, obj):
+        return Course.filtered.get(pk=obj.id).owner.username
     class Meta:
         model = Course
         fields = '__all__'

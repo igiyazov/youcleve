@@ -83,7 +83,7 @@ class Profile(models.Model):
     geo = models.TextField(blank=True, null=True)
     site = models.TextField(blank=True, null=True)
     follow_end = models.DateTimeField(blank=True, null=True)
-
+    description = models.TextField(blank=True, default='')
     saved = models.ManyToManyField(to='courses.Course', related_name="saved_by", null=True, blank=True)
     followings = models.ManyToManyField("self", related_name="followers", symmetrical=False, null=True, blank=True)
 

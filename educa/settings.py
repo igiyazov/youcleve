@@ -26,7 +26,7 @@ SECRET_KEY = 'pm0_l$n%oy9$z7c5%+ae6#8#9rl_p#8v0)l6ngc6j!2#dd7sok'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['gentle-reef-53739.herokuapp.com', '127.0.0.1', '0.0.0.0', 'localhost']
+ALLOWED_HOSTS = ['gentle-reef-53739.herokuapp.com', '127.0.0.1', '0.0.0.0', 'localhost', '84.201.146.113']
 
 
 # Application definition
@@ -103,16 +103,16 @@ WSGI_APPLICATION = 'educa.wsgi.application'
 # }
 
 # DEPLOY
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dd9udtfmrvqdnd',
-        'USER': 'rwtchchpwwiowz',
-        'PASSWORD': '586532ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb',
-        'HOST': 'ec2-18-204-101-137.compute-1.amazonaws.com',
-        'PORT': '5432',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'dd9udtfmrvqdnd',
+#         'USER': 'rwtchchpwwiowz',
+#         'PASSWORD': '586532ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb',
+#         'HOST': 'ec2-18-204-101-137.compute-1.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
 # postgres://rwtchchpwwiowz:586532ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb@ec2-18-204-101-137.compute-1.amazonaws.com:5432/dd9udtfmrvqdnd
 
 # DATABASES = {
@@ -121,6 +121,19 @@ DATABASES = {
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+#yandex
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'youclevedb',
+        'USER': 'youcleverole',
+        'PASSWORD': 'ruslan010110',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
+}
 
 
 # Password validation

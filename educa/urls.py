@@ -14,6 +14,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/activity/', include('educa.apps.activity.urls')),
     path('api/', include('educa.apps.courses.urls')),
+    path('api/search', include('educa.apps.search.urls')),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     # path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),

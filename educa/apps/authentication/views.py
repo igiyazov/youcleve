@@ -9,10 +9,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .models import CustomUser
+from .models import CustomUser, Profile
 from .serializers import (CustomUserListSerializer,
                         CustomUserDetailSerializer, 
-                        MyTokenObtainPairSerializer, ProfileDetailSerializer
+                        MyTokenObtainPairSerializer, ProfileDetailSerializer, ProfileListSerializer
                         )
 
 class CustomUserListView(APIView):
@@ -28,11 +28,15 @@ class CustomUserDetailView(APIView):
         serializer = CustomUserDetailSerializer(user)
         return Response(serializer.data)
 
+class CustomUserCreateView(APIView):
     def post(self, request):
+        username = request.POST.get('username', None)
         email = request.POST.get('email', None)
         # em = request.POST['email']
         password = request.POST.get('password', None)
-        user = CustomUser.objects.create_user(email=email, password=password)
+        user = CustomUser.objects.create_user(username=username, 
+                                                email=email, 
+                                                password=password)
         serializer = CustomUserDetailSerializer(user)
         return Response(serializer.data)
 
@@ -64,6 +68,13 @@ class ProfileDetailView(APIView):
         if serializer_profile:
             result = {**serializer_user.data, **serializer_profile.data}
         return Response(result)
+
+#TODO Paginate
+class ProfileListView(APIView):
+    def get(self, request):
+        profiles = Profile.objects.all()
+        serialize = ProfileListSerializer(profiles, many=True)
+        return Response(serialize.data)
 
 
 class MyObtainTokenPairView(TokenObtainPairView):

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
 
     'rest_framework',
     'djoser',
@@ -51,7 +52,8 @@ INSTALLED_APPS = [
     'educa.apps.courses',
     'educa.apps.base',
     'drf_yasg',
-    'educa.apps.activity'
+    'educa.apps.activity',
+    'educa.apps.search',
 ]
 
 MIDDLEWARE = [
@@ -91,16 +93,16 @@ WSGI_APPLICATION = 'educa.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 # LOCAL
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'educadb',
-#         'USER': 'educarole',
-#         'PASSWORD': 'ruslan010110',
-#         'HOST': '127.0.0.1',
-#         'PORT': '5432',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'educadb',
+        'USER': 'educarole',
+        'PASSWORD': 'ruslan010110',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
+}
 
 # DEPLOY
 # DATABASES = {
@@ -124,16 +126,16 @@ WSGI_APPLICATION = 'educa.wsgi.application'
 
 #yandex
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'youclevedb',
-        'USER': 'youcleverole',
-        'PASSWORD': 'ruslan010110',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'youclevedb',
+#         'USER': 'youcleverole',
+#         'PASSWORD': 'ruslan010110',
+#         'HOST': '127.0.0.1',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation

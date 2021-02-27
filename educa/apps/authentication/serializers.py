@@ -3,6 +3,8 @@ from rest_framework import serializers
 
 from .models import CustomUser, Profile
 
+from educa.querydeb import query_debugger
+
 class CustomUserListSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -32,6 +34,27 @@ class ProfileDetailSerializer(serializers.ModelSerializer):
         model = Profile
         # fields = '__all__'
         exclude = ['followings', 'saved']
+
+class ProfileListSerializer(serializers.ModelSerializer):
+    custom_user = CustomUserDetailSerializer()
+    # followers_count = serializers.SerializerMethodField()
+    # followings_count = serializers.SerializerMethodField()
+    # courses_count = serializers.SerializerMethodField()
+    # def get_followers_count(self, obj):
+    #     return Profile.objects.get(pk=obj.id).followers.count()
+    # def get_followings_count(self, obj):
+    #     return Profile.objects.get(pk=obj.id).followings.count()
+
+    # def get_courses_count(self, obj):
+    #     return Profile.objects.get(pk=obj.id).custom_user.courses_created.count()
+
+    class Meta:
+        model = Profile
+        fields = ('photo', 'custom_user',)
+
+    # def create(self, validated_data):
+    #     return super().create(validated_data)
+    #     # exclude = ['followings', 'saved']
 
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer

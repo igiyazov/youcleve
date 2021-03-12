@@ -37,7 +37,7 @@ class FilteredQuerySet(models.QuerySet):
 
 class FilteredManager(models.Manager):
     def get_queryset(self):
-        return FilteredQuerySet(self.model, using=self._db).filter(draft=False)
+        return FilteredQuerySet(self.model, using=self._db)
 
     def recommended(self):
         return self.get_queryset().recommended()

@@ -26,5 +26,5 @@ urlpatterns = [
 urlpatterns += doc_urls
 
 # if settings.Debug:
-urlpatterns += static(settings.MEDIA_URL, 
-                            document_root=settings.MEDIA_ROOT)
+# urlpatterns += static(settings.MEDIA_URL, 
+                            # document_root=settings.MEDIA_ROOT)

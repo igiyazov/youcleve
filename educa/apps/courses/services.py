@@ -1,3 +1,5 @@
+from django.template.defaultfilters import title
+# from educa.apps.courses.models import Lesson
 from django.core.files.storage import default_storage
 from educa.apps.base.models import TmpFiles
 from django.conf import settings
@@ -59,11 +61,19 @@ def delete_file_tmp(request):
     path = f'tmp/{id}/{model.key}'
     default_storage.delete(path)
 
-def create_lessons(request):
-    videos = request.data.get('videos', None)
-    if videos:
-        videos = literal_eval(videos)
-        return None
+# def create_lessons(request):
+#     videos = request.data.get('videos', None)
+#     if videos:
+#         videos = literal_eval(videos)
+#         for video in videos:
+#             model = TmpFiles.objects.get(pk=id)
+#             path = f'tmp/{video}/{model.key}'
+#             basename = os.path.splitext(model)[0]
+#             Lesson.create(
+#                 title=basename,
+
+#             )
+#         return None
     
     
     

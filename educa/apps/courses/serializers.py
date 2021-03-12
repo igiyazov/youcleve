@@ -27,13 +27,13 @@ class CourseListSerializer(serializers.ModelSerializer):
     duration = serializers.SerializerMethodField()
     username = serializers.SerializerMethodField()
     def get_lessons_count(self, obj):
-        return Course.filtered.get(pk=obj.id).lessons.count()
+        return Course.objects.get(pk=obj.id).lessons.count()
 
     def get_likes_count(self, obj):
         return all_likes_count(obj)
 
     def get_duration(self, obj):
-        time = Course.filtered.get(pk=obj.id)\
+        time = Course.objects.get(pk=obj.id)\
                     .lessons\
                     .aggregate(dur=Sum('duration')).get('dur', 0)
         if time:
@@ -41,7 +41,10 @@ class CourseListSerializer(serializers.ModelSerializer):
         return time
 
     def get_username(self, obj):
-        return Course.filtered.get(pk=obj.id).owner.username
+        try:
+            return Course.objects.get(pk=obj.id).owner.username
+        except:
+            return 'undefined'
             
 
     class Meta:

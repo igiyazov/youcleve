@@ -7,3 +7,7 @@ class TimestampedModel(models.Model):
     class Meta:
         abstract = True
         ordering = ['-created_at', '-updated_at']
+
+
+class TmpFiles(models.Model):
+    key = models.TextField(blank=True, default='')

@@ -25,7 +25,7 @@ def search(request):
     # breakpoint()
     # if course_tri:
     #     course = course.union(course_tri)
-                
+    
     authors = Profile.objects.annotate(similarity=TrigramSimilarity('custom_user__username', search_data))\
                                 .filter(similarity__gt=0.3)\
                                 .order_by('-similarity')

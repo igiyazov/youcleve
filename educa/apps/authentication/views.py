@@ -30,10 +30,11 @@ class CustomUserDetailView(APIView):
 
 class CustomUserCreateView(APIView):
     def post(self, request):
-        username = request.POST.get('username', None)
-        email = request.POST.get('email', None)
-        # em = request.POST['email']
-        password = request.POST.get('password', None)
+        username = request.data.get('username', None)
+        email = request.data.get('email', None)
+        # em = request.data['email']
+        password = request.data.get('password', None)
+        # breakpoint()
         user = CustomUser.objects.create_user(username=username, 
                                                 email=email, 
                                                 password=password)

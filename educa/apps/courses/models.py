@@ -1,9 +1,15 @@
+from os import times
+import os
 from django.db import models
+from django.utils.text import slugify 
 from django.db.models.aggregates import Sum
 from django.db.models.deletion import SET_DEFAULT
-from django.db.models.fields import BooleanField
+from django.utils.timezone import timedelta
+from django.db.models.fields import BooleanField, TimeField
 from educa.apps.authentication.models import CustomUser
 from educa.apps.base.models import TimestampedModel
+
+from .services import get_upload_video_path
 
 class FilteredQuerySet(models.QuerySet):
     def recommended(self):
@@ -100,7 +106,7 @@ class Course(TimestampedModel):
                                 on_delete=models.SET_NULL,
                                 null=True)
     title = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True)
+    slug = models.SlugField(max_length=200, unique=True, null=True)
     course_duration = models.DurationField(null=True)
     rating = models.FloatField(default=0)
     views = models.PositiveIntegerField(default=0)
@@ -124,14 +130,31 @@ class Course(TimestampedModel):
     objects = models.Manager()
     filtered = FilteredManager()
 
+    def save(self, *args, **kwargs): 
+        super(Course, self).save(*args, **kwargs)
+        self.slug = slugify(f'{self.title} {self.id}')
+        
+
 class Lesson(TimestampedModel):
-    title = models.CharField(max_length=200)
-    duration = models.DurationField()
-    slug = models.SlugField(max_length=200, unique=True, null=True)
+    title = models.CharField(max_length=1000)
+    duration = models.DurationField(default=timedelta(minutes=0))
+    slug = models.SlugField(max_length=1000, unique=True, null=True)
     course = models.ForeignKey(Course, 
                                 related_name='lessons', 
                                 on_delete=models.CASCADE)
-    video = models.FileField(upload_to='video/', blank=True) #TODO Написать фильтрацию видео файлов по директориям, а не в общую диркеторию
-    photo = models.ImageField(upload_to=f'lesson/{title}', null=True, blank=True)
+    video = models.FileField(upload_to=get_upload_video_path, blank=True) #TODO Написать фильтрацию видео файлов по директориям, а не в общую диркеторию
+    photo = models.ImageField(upload_to='photo/', null=True, blank=True)
     overview = models.TextField(null=True, blank=True)
+    number = models.IntegerField(default=-1)
     draft = models.BooleanField(default=True)
+
+    @property
+    def filename(self):
+        return os.path.basename(self.video.name)
+
+    def save(self, *args, **kwargs): 
+        super(Lesson, self).save(*args, **kwargs)
+        slug = f'{self.course.slug} {self.title} {self.id}'
+        self.slug = slugify(slug) 
+        self.title = self.filename
+        # super(Lesson, self).save(*args, **kwargs)

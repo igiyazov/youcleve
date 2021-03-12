@@ -16,7 +16,8 @@ class PaginationHandlerMixin(object):
         
         if self.paginator is None:
             return None
-        return self.paginator.paginate_queryset(queryset,
+        return self.paginator\
+                    .paginate_queryset(queryset,
                    self.request, view=self)
     def get_paginated_response(self, data):
         assert self.paginator is not None

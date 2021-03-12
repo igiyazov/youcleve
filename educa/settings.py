@@ -26,7 +26,14 @@ SECRET_KEY = 'pm0_l$n%oy9$z7c5%+ae6#8#9rl_p#8v0)l6ngc6j!2#dd7sok'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['gentle-reef-53739.herokuapp.com', '127.0.0.1', '0.0.0.0', 'localhost', '84.201.146.113']
+ALLOWED_HOSTS = ['gentle-reef-53739.herokuapp.com', 
+                '127.0.0.1', 
+                '0.0.0.0', 
+                'localhost', 
+                '84.201.146.113',
+                '192.168.0.103',
+                '192.168.0.103:8000'
+                ]
 
 
 # Application definition
@@ -47,6 +54,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
+    'storages',
+    'django_celery_beat',
 
 
     'educa.apps.courses',
@@ -93,28 +102,28 @@ WSGI_APPLICATION = 'educa.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 # LOCAL
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'educadb',
-#         'USER': 'educarole',
-#         'PASSWORD': 'ruslan010110',
-#         'HOST': '127.0.0.1',
-#         'PORT': '5432',
-#     }
-# }
-
-# DEPLOY
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dd9udtfmrvqdnd',
-        'USER': 'rwtchchpwwiowz',
-        'PASSWORD': '586532ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb',
-        'HOST': 'ec2-18-204-101-137.compute-1.amazonaws.com',
+        'NAME': 'educadb',
+        'USER': 'educarole',
+        'PASSWORD': 'ruslan010110',
+        'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }
+
+# DEPLOY
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'dd9udtfmrvqdnd',
+#         'USER': 'rwtchchpwwiowz',
+#         'PASSWORD': '586532ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb',
+#         'HOST': 'ec2-18-204-101-137.compute-1.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
 # postgres://rwtchchpwwiowz:586532ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb@ec2-18-204-101-137.compute-1.amazonaws.com:5432/dd9udtfmrvqdnd
 
 # DATABASES = {
@@ -180,7 +189,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # ************************************#
 
-MEDIA_ROOT = BASE_DIR / 'educa/media/'
+# MEDIA_ROOT = BASE_DIR / 'educa/media/'
 
 MEDIA_URL = '/media/'
 
@@ -191,7 +200,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 20
 }
 
 
@@ -204,3 +213,33 @@ REST_FRAMEWORK = {
 # ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
+
+##### AWS
+AWS_ACCESS_KEY_ID = 'jDi9lFLj1QS-QbC47vhM'
+AWS_SECRET_ACCESS_KEY = 'jK5ZZQ1XBG85RU8XJbEOklUD5EKj6QVKoxLJ38tD'
+AWS_STORAGE_BUCKET_NAME = 'youcleve'
+AWS_S3_ENDPOINT_URL = 'https://storage.yandexcloud.net'
+# AWS_S3_REGION_NAME = 'us-east-1'
+# AWS_S3_SIGNATURE_VERSION = 's3'
+
+AWS_LOCATION = 'media'
+
+
+MEDIA_URL = f'https://{AWS_S3_ENDPOINT_URL}/{AWS_LOCATION}/'
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+DEFAULT_FILE_STORAGE = 'educa.storage_backends.MediaStorage'
+
+
+#################################
+# id jDi9lFLj1QS-QbC47vhM
+# secretkey jK5ZZQ1XBG85RU8XJbEOklUD5EKj6QVKoxLJ38tD
+
+
+# CELERY_BROKER_URL = 'redis://localhost:6379'   
+# If time zones are active (USE_TZ = True) define your local 
+# CELERY_TIMEZONE = 'Asia/Kolkata'
+# app.conf.enable_utc = False # so celery doesn't take utc by default
+# We're going to have our tasks rolling soon, so that will be handy CELERY_BEAT_SCHEDULE = {}

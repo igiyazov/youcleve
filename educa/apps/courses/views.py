@@ -146,3 +146,14 @@ def tmp(request):
         return Response({},status=status.HTTP_200_OK)
 
 
+@api_view(['POST'])
+def course_save(request):
+    user_id = request.data.get('user_id')
+    obj_id = request.data.get('obj_id')
+
+    if user_id and obj_id:
+        user = CustomUser.objects.get(pk=user_id)
+        course = Course.objects.get(pk=obj_id)
+
+        user.profile.saved.add(course)
+    return Response('ok')

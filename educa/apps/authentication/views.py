@@ -1,3 +1,4 @@
+from jedi.api.completion import search_in_module
 from educa.apps.authentication.services import profile_info
 from django.db import models
 from django.shortcuts import render
@@ -30,17 +31,22 @@ class CustomUserDetailView(APIView):
 
 class CustomUserCreateView(APIView):
     def post(self, request):
-        username = request.data.get('username', None)
-        email = request.data.get('email', None)
+        # username = request.data.get('username', None)
+        # email = request.data.get('email', None)
         # em = request.data['email']
-        password = request.data.get('password', None)
+        # password = request.data.get('password', None)
         # breakpoint()
-        user = CustomUser.objects.create_user(username=username, 
-                                                email=email, 
-                                                password=password)
-        serializer = CustomUserDetailSerializer(user)
-        return Response(serializer.data)
+        
+        # user = CustomUser.objects.create_user(username=username, 
+                                                # email=email, 
+                                                # password=password)
+        # serializer = CustomUserDetailSerializer(user)
 
+        serialized = CustomUserDetailSerializer(data=request.data)
+        if serialized.is_valid():
+            serialized.save()
+            return Response(serialized.data)
+        return Response(serialized.errors, status=status.HTTP_409_CONFLICT)
 
 # class CustomUserLoginView(APIView):
 class CustomUserLogoutView(APIView):
@@ -87,3 +93,20 @@ def get_profile_info(request, pk, param):
     user = CustomUser.objects.get(pk=pk)
     data = profile_info(user, param)
     return Response(data)
+
+
+
+#FIXME Work incorrect
+@api_view(['POST'])
+def profile_follow(request):
+    user_id = request.data.get('user_id')
+    follow_id = request.data.get('follow_id')
+
+    if user_id and follow_id:
+        user = CustomUser.objects.get(pk=user_id)
+        follow = CustomUser.objects.get(pk=user_id)
+        user.profile.followings.add(follow.profile)
+
+        return Response('ok')
+    
+    return Response('not ok')

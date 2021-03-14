@@ -5,7 +5,7 @@ from .views import (CategoryListView,
                     CourseListView,   
                     LessonDetailView, 
                     LessonListView, LevelListView, 
-                    SubcategoryListView, tmp
+                    SubcategoryListView, course_save, tmp
                     )
 
 urlpatterns = [
@@ -16,6 +16,7 @@ urlpatterns = [
     path('courses/', CourseListView.as_view(), name='all_course_list'),
     path('course/<int:pk>', CourseDetailView.as_view(), name='course_detail'),
     path('course/create', CourseDetailView.as_view(), name='course_create'),
+    path('course/save', course_save, name='save_course'),
     path('lessons/<int:course_id>', LessonListView.as_view(), name='lesson_list'),
     path('lessons/', LessonListView.as_view(), name='lesson_all_list'),
     path('lesson/<int:id>', LessonDetailView.as_view(), name='lesson_detail'),

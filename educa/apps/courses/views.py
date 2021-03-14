@@ -146,6 +146,8 @@ def tmp(request):
         return Response({},status=status.HTTP_200_OK)
 
 
+
+
 @api_view(['POST'])
 def course_save(request):
     user_id = request.data.get('user_id')

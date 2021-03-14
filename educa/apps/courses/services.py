@@ -61,19 +61,19 @@ def delete_file_tmp(request):
     path = f'tmp/{id}/{model.key}'
     default_storage.delete(path)
 
-def create_lessons(request):
-    videos = request.data.get('videos', None)
-    if videos:
-        videos = literal_eval(videos)
-        for video in videos:
-            model = TmpFiles.objects.get(pk=id)
-            path = f'tmp/{video}/{model.key}'
-            basename = os.path.splitext(model)[0]
-            Lesson.create(
-                title=basename,
+# def create_lessons(request):
+#     videos = request.data.get('videos', None)
+#     if videos:
+#         videos = literal_eval(videos)
+#         for video in videos:
+#             model = TmpFiles.objects.get(pk=id)
+#             path = f'tmp/{video}/{model.key}'
+#             basename = os.path.splitext(model)[0]
+#             Lesson.create(
+#                 title=basename,
 
-            )
-        return None
+#             )
+#         return None
     
     
     

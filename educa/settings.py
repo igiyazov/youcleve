@@ -16,7 +16,7 @@ ALLOWED_HOSTS = ['gentle-reef-53739.herokuapp.com',
                 '84.201.146.113',
                 '192.168.0.105',
                 '192.168.0.105:8000',
-		'84.201.146.113'
+		        '84.201.146.113'
                 ]
 
 
@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'storages',
-    'django_celery_beat',
 
 
     'educa.apps.courses',

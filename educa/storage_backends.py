@@ -1,8 +1,9 @@
 import os
 from storages.backends.s3boto3 import S3Boto3Storage
 from django.conf import settings
-# from storages.utils import settings
+import logging
 import boto3
+from botocore.exceptions import ClientError
 
 class MediaStorage(S3Boto3Storage):
     location = 'media'
@@ -25,3 +26,4 @@ class MediaStorage(S3Boto3Storage):
     def move(self, from_path, to_path):
         self.copy(from_path,to_path)
         super().delete(from_path)
+

@@ -3,6 +3,8 @@ from django.template.defaultfilters import title
 from django.core.files.storage import default_storage
 from educa.apps.base.models import TmpFiles
 from django.conf import settings
+# from django.core.exceptions
+from rest_framework.exceptions import ParseError
 import random
 from rest_framework.parsers import BaseParser
 import boto3
@@ -102,10 +104,21 @@ def tmp_to_storage(from_path, to_path):
 
 
 def get_poster_path(request):
-    id = int(request.data.get('poster', None))
-    if id is None:
-        return None
+    """ 
+    Возвращает путь к файлу в облаке и название файла
+    Принимает:
+        request - информация из фронта
+
+    Возвращает:
+        path - путь к файлу
+        model.key - название файла
+    """ 
+    id = int(request.data.get('poster', None) or -1)
+    if id == -1:
+        raise ParseError()
+
     model = TmpFiles.objects.get(pk=id)
+    
     path = f'tmp/{id}/{model.key}'
     return (path, model.key)
 

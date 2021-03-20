@@ -57,7 +57,7 @@ class ProfileListSerializer(serializers.ModelSerializer):
     #     # exclude = ['followings', 'saved']
 
 
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -65,7 +65,20 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # The default result (access/refresh tokens)
         data = super(MyTokenObtainPairSerializer, self).validate(attrs)
         # Custom data you want to include
-        data.update({'user': self.user.email})
+        data.update({'user': self.user.username})
+        data.update({'email': self.user.email})
         data.update({'id': self.user.id})
+        # and everything else you want to send in the response
+        return data
+
+class MyTokenRefreshSerializer(TokenRefreshSerializer):
+    def validate(self, attrs):
+        # The default result (access/refresh tokens)
+        data = super(MyTokenRefreshSerializer, self).validate(attrs)
+        # Custom data you want to include
+        # breakpoint()
+        # data.update({'user': self.user.username})
+        # data.update({'email': self.user.email})
+        # data.update({'id': self.user.id})
         # and everything else you want to send in the response
         return data

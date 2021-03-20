@@ -1,4 +1,5 @@
 import os
+from django.core import exceptions
 from django.core.files.storage import default_storage
 from rest_framework.parsers import JSONParser, MultiPartParser
 from educa.apps.authentication.models import CustomUser
@@ -67,17 +68,22 @@ class CourseDetailView(APIView):
         
         if serialized_course.is_valid():
             res = serialized_course.save()
-            poster_path, filename = get_poster_path(request)
-            new_path = new_poster_path(res, filename)
-            if poster_path is not None:                
-                default_storage.copy(poster_path, new_path)
-                default_storage.delete(poster_path)
-                res.photo = new_path
-                res.save()
+            try:
+                poster_path, filename = get_poster_path(request)
+            except ParseError as e:
+                return Response(data = {'message':e.default_detail}, status=e.status_code)
+            except Exception as e:
+                return Response(e.msg)
+            new_path = new_poster_path(res, filename)               
+            default_storage.copy(poster_path, new_path)
+            default_storage.delete(poster_path)
+            res.photo = new_path
+            res.save()
+            return Response('Course created successfully', status=status.HTTP_201_CREATED)
             # tmp_to_storage(request)
             
             # create_lessons()
-        return Response('ok')
+        return Response(serialized_course.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 

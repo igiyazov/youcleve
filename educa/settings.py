@@ -1,4 +1,4 @@
-
+from datetime import timedelta
 from pathlib import Path
 import os
 
@@ -84,16 +84,16 @@ WSGI_APPLICATION = 'educa.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 # LOCAL
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'educadb',
-#         'USER': 'educarole',
-#         'PASSWORD': 'ruslan010110',
-#         'HOST': '127.0.0.1',
-#         'PORT': '5432',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'educadb',
+        'USER': 'educarole',
+        'PASSWORD': 'ruslan010110',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
+}
 
 # DEPLOY
 # DATABASES = {
@@ -107,7 +107,7 @@ WSGI_APPLICATION = 'educa.wsgi.application'
 #     }
 # }
 # postgres://rwtchchpwwiowz:586532ea4459daf3f645bf1037e8ab9a3823c1026cb1d10d136ec678cb5322eb@ec2-18-204-101-137.compute-1.amazonaws.com:5432/dd9udtfmrvqdnd
-
+# pg_dump --host ec2-18-204-101-137.compute-1.amazonaws.com --port 5432 --user rwtchchpwwiowz dd9udtfmrvqdnd > backup.sql
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -117,16 +117,16 @@ WSGI_APPLICATION = 'educa.wsgi.application'
 
 #yandex
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'youclevedb',
-        'USER': 'youcleverole',
-        'PASSWORD': 'ruslan010110',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'youclevedb',
+#         'USER': 'youcleverole',
+#         'PASSWORD': 'ruslan010110',
+#         'HOST': '127.0.0.1',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
@@ -203,6 +203,8 @@ AWS_ACCESS_KEY_ID = 'jDi9lFLj1QS-QbC47vhM'
 AWS_SECRET_ACCESS_KEY = 'jK5ZZQ1XBG85RU8XJbEOklUD5EKj6QVKoxLJ38tD'
 AWS_STORAGE_BUCKET_NAME = 'youcleve'
 AWS_S3_ENDPOINT_URL = 'https://storage.yandexcloud.net'
+AWS_QUERYSTRING_AUTH = False
+# AWS_S3_ADDRESSING_STYLE = 'path'
 # AWS_S3_REGION_NAME = 'us-east-1'
 # AWS_S3_SIGNATURE_VERSION = 's3'
 
@@ -225,3 +227,10 @@ DEFAULT_FILE_STORAGE = 'educa.storage_backends.MediaStorage'
 # CELERY_TIMEZONE = 'Asia/Kolkata'
 # app.conf.enable_utc = False # so celery doesn't take utc by default
 # We're going to have our tasks rolling soon, so that will be handy CELERY_BEAT_SCHEDULE = {}
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('JWT',),
+}

@@ -1,9 +1,13 @@
 from django.db.models.query import QuerySet
+import rest_framework
+from rest_framework.permissions import IsAuthenticated
 from educa.apps.authentication.serializers import CustomUserListSerializer, ProfileListSerializer
 from .models import CustomUser, Profile
 from educa.apps.courses.models import Course
 from educa.apps.courses.serializers import CourseListSerializer
 from educa.querydeb import query_debugger
+from rest_framework.decorators import permission_classes
+
 
 class CustomUserService:
     def __init__(self, user, param):

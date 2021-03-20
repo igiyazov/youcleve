@@ -4,16 +4,18 @@ from django.db import models
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
+
+from educa.permissions import OnlyOwner
 from .models import CustomUser, Profile
 from .serializers import (CustomUserListSerializer,
                         CustomUserDetailSerializer, 
-                        MyTokenObtainPairSerializer, ProfileDetailSerializer, ProfileListSerializer
+                        MyTokenObtainPairSerializer, MyTokenRefreshSerializer, ProfileDetailSerializer, ProfileListSerializer
                         )
 
 class CustomUserListView(APIView):
@@ -23,7 +25,7 @@ class CustomUserListView(APIView):
         return Response(serializer.data)
 
 class CustomUserDetailView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     def get(self, request, pk):
         user = CustomUser.objects.get(pk = pk)
         serializer = CustomUserDetailSerializer(user)
@@ -88,7 +90,12 @@ class MyObtainTokenPairView(TokenObtainPairView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = MyTokenObtainPairSerializer
 
+class MyRefreshTokenView(TokenRefreshView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = MyTokenRefreshSerializer
+
 @api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated, OnlyOwner])
 def get_profile_info(request, pk, param):
     user = CustomUser.objects.get(pk=pk)
     data = profile_info(user, param)
@@ -98,6 +105,7 @@ def get_profile_info(request, pk, param):
 
 #FIXME Work incorrect
 @api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
 def profile_follow(request):
     user_id = request.data.get('user_id')
     follow_id = request.data.get('follow_id')

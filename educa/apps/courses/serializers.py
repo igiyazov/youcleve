@@ -75,6 +75,10 @@ class CourseDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
+        extra_kwargs = {
+                        'category':{'required': True}, 
+                        'subcategory':{'required': True},
+                        }
 
 class SubcategoryListSerializer(serializers.ModelSerializer):
     class Meta:

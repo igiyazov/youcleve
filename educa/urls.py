@@ -23,8 +23,11 @@ urlpatterns = [
     path('api/accounts/', include('educa.apps.authentication.urls'))
 ]
 
-urlpatterns += doc_urls
 
-# if settings.Debug:
-# urlpatterns += static(settings.MEDIA_URL, 
-                            # document_root=settings.MEDIA_ROOT)
+
+
+if settings.DEBUG:
+    urlpatterns += doc_urls
+
+    # urlpatterns += static(settings.MEDIA_URL, 
+    #                         document_root=settings.MEDIA_ROOT)

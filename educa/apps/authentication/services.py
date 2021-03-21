@@ -5,7 +5,6 @@ from educa.apps.authentication.serializers import CustomUserListSerializer, Prof
 from .models import CustomUser, Profile
 from educa.apps.courses.models import Course
 from educa.apps.courses.serializers import CourseListSerializer
-from educa.querydeb import query_debugger
 from rest_framework.decorators import permission_classes
 
 

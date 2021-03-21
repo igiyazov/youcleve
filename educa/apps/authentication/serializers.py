@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 from .models import CustomUser, Profile
 
-from educa.querydeb import query_debugger
 
 class CustomUserListSerializer(serializers.ModelSerializer):
 

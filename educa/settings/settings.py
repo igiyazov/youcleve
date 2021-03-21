@@ -204,9 +204,6 @@ AWS_SECRET_ACCESS_KEY = 'jK5ZZQ1XBG85RU8XJbEOklUD5EKj6QVKoxLJ38tD'
 AWS_STORAGE_BUCKET_NAME = 'youcleve'
 AWS_S3_ENDPOINT_URL = 'https://storage.yandexcloud.net'
 AWS_QUERYSTRING_AUTH = False
-# AWS_S3_ADDRESSING_STYLE = 'path'
-# AWS_S3_REGION_NAME = 'us-east-1'
-# AWS_S3_SIGNATURE_VERSION = 's3'
 
 AWS_LOCATION = 'media'
 
@@ -216,17 +213,6 @@ MEDIA_URL = f'https://{AWS_S3_ENDPOINT_URL}/{AWS_LOCATION}/'
 
 DEFAULT_FILE_STORAGE = 'educa.storage_backends.MediaStorage'
 
-
-#################################
-# id jDi9lFLj1QS-QbC47vhM
-# secretkey jK5ZZQ1XBG85RU8XJbEOklUD5EKj6QVKoxLJ38tD
-
-
-# CELERY_BROKER_URL = 'redis://localhost:6379'   
-# If time zones are active (USE_TZ = True) define your local 
-# CELERY_TIMEZONE = 'Asia/Kolkata'
-# app.conf.enable_utc = False # so celery doesn't take utc by default
-# We're going to have our tasks rolling soon, so that will be handy CELERY_BEAT_SCHEDULE = {}
 
 
 SIMPLE_JWT = {

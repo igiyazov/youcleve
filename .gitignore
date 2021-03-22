@@ -11,6 +11,7 @@ local.sql
 my_database.sql
 
 #educa
+settings/settings.py
 __pycache__
 **/__pycache__/
 **/__pycache__

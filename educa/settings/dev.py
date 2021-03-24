@@ -179,3 +179,13 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('JWT',),
 }
+
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_BEAT_SCHEDULE = {
+    'test_task':{
+        'task': 'educa.apps.courses.tasks.test',
+        'schedule': 5.0
+    }
+}

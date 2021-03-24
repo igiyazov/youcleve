@@ -145,7 +145,9 @@ class LevelListView(APIView):
 @api_view(['POST','DELETE'])
 @parser_classes([PlainTextParser, JSONParser, MultiPartParser])
 def tmp(request):
-    if request.method == 'POST':
+    if request.method == 'GET':
+        return Response()
+    elif request.method == 'POST':
         return Response(upload_file_tmp(request), status=status.HTTP_200_OK, content_type='text/plain')
     elif request.method == 'DELETE':
         delete_file_tmp(request)

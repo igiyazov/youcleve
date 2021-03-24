@@ -21,13 +21,16 @@ def add_comment(obj, user, text):
     return comment
 
 
-def add_like(obj, user):
+def add_or_remove_like(obj, user):
     """Лайкает `obj`.
     """
     obj_type = ContentType.objects.get_for_model(obj)
     like, is_created = Like.objects.get_or_create(
         content_type=obj_type, object_id=obj.id, user=user)
-    return like
+    if not is_created:
+        remove_like(obj, user)
+        return False
+    return True
 
 def all_likes_count(obj):
     obj_type = ContentType.objects.get_for_model(obj)
@@ -35,6 +38,15 @@ def all_likes_count(obj):
         content_type=obj_type, object_id=obj.id,
     ).count()
     return likes
+
+def is_liked(obj, user):
+    obj_type = ContentType.objects.get_for_model(obj)
+    try:
+        like = Like.objects.get(
+            content_type=obj_type, object_id=obj.id, user=user)
+    except Like.DoesNotExist:
+        return False
+    return True
 
 def remove_like(obj, user):
     """Удаляет лайк с `obj`.

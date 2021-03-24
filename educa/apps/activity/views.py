@@ -5,7 +5,7 @@ from educa.apps.courses.models import Course
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from .services import add_comment, add_like, all_comments, all_likes_count
+from .services import add_comment, add_or_remove_like, all_comments, all_likes_count, is_liked
 from educa.apps.authentication.models import CustomUser
 from rest_framework import status
 from .serilizers import CommentSerializer
@@ -16,8 +16,20 @@ def add_like_course(request):
     course_id = request.data.get('course_id', None)
     user = CustomUser.objects.get(pk=user_id)
     course = Course.filtered.get(pk=course_id)
-    add_like(course, user)
-    return Response({'status':'ok'}, status=status.HTTP_200_OK)
+    if add_or_remove_like(course, user):
+        return Response({'result':'liked'}, status=status.HTTP_200_OK)
+    return Response({'result':'unliked'}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def is_liked_course(request):
+    # breakpoint()
+    user_id = request.GET.get('user_id', None)
+    course_id = request.GET.get('course_id', None)
+    user = CustomUser.objects.get(pk=user_id)
+    course = Course.filtered.get(pk=course_id)
+    if is_liked(course, user):
+        return Response({'result':'liked'}, status=status.HTTP_200_OK)
+    return Response({'result':'notliked'}, status=status.HTTP_200_OK)
 
 
 class CommentListView(APIView):
@@ -30,9 +42,9 @@ class CommentListView(APIView):
 
 class CommentDetailView(APIView):
     def post(self, request):
-        course_id = request.POST.get('course_id', None)
-        user_id = request.POST.get('user_id', None)
-        text = request.POST.get('text', None)
+        course_id = request.data.get('course_id', None)
+        user_id = request.data.get('user_id', None)
+        text = request.data.get('text', None)
         course = Course.filtered.get(pk=course_id)
         user = CustomUser.objects.get(pk=user_id)
         add_comment(course, user, text)

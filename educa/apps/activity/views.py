@@ -12,8 +12,8 @@ from .serilizers import CommentSerializer
 
 @api_view(['POST'])
 def add_like_course(request):
-    user_id = request.POST.get('user_id', None)
-    course_id = request.POST.get('course_id', None)
+    user_id = request.data.get('user_id', None)
+    course_id = request.data.get('course_id', None)
     user = CustomUser.objects.get(pk=user_id)
     course = Course.filtered.get(pk=course_id)
     add_like(course, user)

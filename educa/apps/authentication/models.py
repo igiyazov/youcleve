@@ -76,15 +76,11 @@ class Profile(models.Model):
     custom_user = models.OneToOneField(CustomUser,
                                         related_name='profile',
                                         on_delete=models.CASCADE)
-    # username = models.CharField(max_length=100)
-    # company_name = models.CharField(max_length=200)
     photo = models.ImageField(upload_to='profile/', null=True, blank=True)
-    promocode = models.CharField(max_length=20, blank=True, default='')
     bonus = models.PositiveIntegerField(default=0)
     bill_number = models.CharField(max_length=50, default='', blank=True)
     geo = models.TextField(blank=True, null=True)
     site = models.TextField(blank=True, null=True)
-    follow_end = models.DateTimeField(blank=True, null=True)
     description = models.TextField(blank=True, default='')
     saved = models.ManyToManyField(to='courses.Course', related_name="saved_by", null=True, blank=True)
     followings = models.ManyToManyField("self", related_name="followers", symmetrical=False, null=True, blank=True)

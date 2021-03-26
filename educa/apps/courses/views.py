@@ -1,18 +1,13 @@
-import os
-from django.core import exceptions
 from django.core.files.storage import default_storage
 from rest_framework.parsers import JSONParser, MultiPartParser
 from educa.apps.authentication.models import CustomUser
 from os import stat
 from django.shortcuts import render
-from django.views.decorators.csrf import requires_csrf_token
-from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .services import PlainTextParser, delete_file_tmp, get_filtered, get_poster_path, new_poster_path, tmp_to_storage
+from .services import PlainTextParser, create_lessons, delete_file_tmp, get_filtered, get_poster_path, new_poster_path, tmp_to_storage
 from rest_framework.exceptions import *
 from rest_framework.decorators import api_view, parser_classes
-# from rest_framework.parsers
 
 
 from .services import upload_file_tmp
@@ -61,7 +56,7 @@ class CourseDetailView(APIView):
         return Response(serializer.data)
 
     def post(self, request):    
-              
+        # breakpoint()
         serialized_course = CourseDetailSerializer(data=request.data)
         
         val = serialized_course.is_valid()
@@ -78,11 +73,12 @@ class CourseDetailView(APIView):
             default_storage.copy(poster_path, new_path)
             default_storage.delete(poster_path)
             res.photo = new_path
+            create_lessons(request)
             res.save()
             return Response('Course created successfully', status=status.HTTP_201_CREATED)
             # tmp_to_storage(request)
             
-            # create_lessons()
+            
         return Response(serialized_course.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

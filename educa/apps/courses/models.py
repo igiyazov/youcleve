@@ -9,8 +9,6 @@ from django.db.models.fields import BooleanField, TimeField
 from educa.apps.authentication.models import CustomUser
 from educa.apps.base.models import TimestampedModel
 
-from .services import get_upload_video_path
-
 class FilteredQuerySet(models.QuerySet):
     def recommended(self):
         return self.order_by('-likes')
@@ -142,7 +140,7 @@ class Lesson(TimestampedModel):
     course = models.ForeignKey(Course, 
                                 related_name='lessons', 
                                 on_delete=models.CASCADE)
-    video = models.FileField(upload_to=get_upload_video_path, blank=True) #TODO Написать фильтрацию видео файлов по директориям, а не в общую диркеторию
+    # video = models.FileField(blank=True) #TODO Написать фильтрацию видео файлов по директориям, а не в общую диркеторию
     photo = models.ImageField(upload_to='photo/', null=True, blank=True)
     overview = models.TextField(null=True, blank=True)
     number = models.IntegerField(default=-1)

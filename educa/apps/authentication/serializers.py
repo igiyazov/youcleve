@@ -14,8 +14,14 @@ class CustomUserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        # fields = '__all__'
-        exclude = ['password']
+        fields = '__all__'
+
+    def create(self, validated_data):
+        email = validated_data.get('email')
+        username = validated_data.get('username')
+        password = validated_data.get('password')
+        return CustomUser.objects.create_user(username, email, password)
+        
 
 class ProfileDetailSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()

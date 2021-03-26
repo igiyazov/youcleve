@@ -20,7 +20,8 @@ class CustomUserService:
         self.param = param
     
     def get_queryset(self):
-        '''Вызывает, в зависимости от param нужную функцию 
+        '''
+            Вызывает, в зависимости от param нужную функцию 
             из словаря
         '''
         if self.param:

@@ -33,24 +33,14 @@ class CustomUserDetailView(APIView):
 
 class CustomUserCreateView(APIView):
     def post(self, request):
-        # username = request.data.get('username', None)
-        # email = request.data.get('email', None)
-        # em = request.data['email']
-        # password = request.data.get('password', None)
-        # breakpoint()
-        
-        # user = CustomUser.objects.create_user(username=username, 
-                                                # email=email, 
-                                                # password=password)
-        # serializer = CustomUserDetailSerializer(user)
-
         serialized = CustomUserDetailSerializer(data=request.data)
         if serialized.is_valid():
-            serialized.save()
+            user = serialized.create(serialized.validated_data)
+            user.profile = Profile()
             return Response(serialized.data)
         return Response(serialized.errors, status=status.HTTP_409_CONFLICT)
 
-# class CustomUserLoginView(APIView):
+
 class CustomUserLogoutView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -90,6 +80,9 @@ class MyObtainTokenPairView(TokenObtainPairView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = MyTokenObtainPairSerializer
 
+    # def post(self,request):
+
+
 class MyRefreshTokenView(TokenRefreshView):
     permission_classes = (permissions.AllowAny,)
     serializer_class = MyTokenRefreshSerializer
@@ -97,8 +90,29 @@ class MyRefreshTokenView(TokenRefreshView):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated, OnlyOwner])
 def get_profile_info(request, pk, param):
-    user = CustomUser.objects.get(pk=pk)
-    data = profile_info(user, param)
+    """
+        Функция возвращает личные данные пользователя.
+        Доступ разрешен только авторизованному пользователю
+        Принимает:
+            pk - id пользователя
+            param - ключевое слово для вызова нужной функции
+        Возвращает:
+            queryset из запрошенных данных 
+    """
+    try:
+        user = CustomUser.objects.get(pk=pk)
+        data = profile_info(user, param)
+    except CustomUser.DoesNotExist:
+        return Response({'detail': 'User doesn\'t exist'}, status.HTTP_404_NOT_FOUND)
+    return Response(data)
+
+@api_view(['GET'])
+def get_profile_courses(request, pk):
+    try:
+        user = CustomUser.objects.get(pk=pk)
+        data = profile_info(user, 'courses')
+    except CustomUser.DoesNotExist:
+        return Response({'detail': 'User doesn\'t exist'}, status.HTTP_404_NOT_FOUND)
     return Response(data)
 
 

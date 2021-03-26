@@ -1,13 +1,11 @@
-from django.template.defaultfilters import title
-# from educa.apps.courses.models import Lesson
+from educa.apps.courses.models import Category, Course, Lesson, Subcategory
 from django.core.files.storage import default_storage
 from educa.apps.base.models import TmpFiles
 from django.conf import settings
-# from django.core.exceptions
 from rest_framework.exceptions import ParseError
-import random
 from rest_framework.parsers import BaseParser
 import boto3
+import os
 from ast import literal_eval
 
 class PlainTextParser(BaseParser):
@@ -38,14 +36,21 @@ def get_filtered(request,model):
     return model
 
 
-import os
-def get_upload_video_path(instance, filename):
+# def get_unsaved_course_slug
+
+
+def new_upload_video_path(request, filename, course, i):
+    category_id = request.data.get('category', None)
+    subcategory_id = request.data.get('subcategory', None)
+    category = Category.objects.get(pk=category_id)
+    subcategory = Subcategory.objects.get(pk=subcategory_id)
+
     return os.path.join(
-      instance.course.subcategory.category.slug,
-      instance.course.subcategory.slug,
-      instance.course.slug, 
+      category.slug,
+      subcategory.slug,
+      course.slug, 
       'lessons', 
-      f'lesson_{1}',
+      f'lesson_{i}',
       filename)
 
 #FIXME Если id повторится, возникнет ошибка
@@ -63,19 +68,24 @@ def delete_file_tmp(request):
     path = f'tmp/{id}/{model.key}'
     default_storage.delete(path)
 
-# def create_lessons(request):
-#     videos = request.data.get('videos', None)
-#     if videos:
-#         videos = literal_eval(videos)
-#         for video in videos:
-#             model = TmpFiles.objects.get(pk=id)
-#             path = f'tmp/{video}/{model.key}'
-#             basename = os.path.splitext(model)[0]
-#             Lesson.create(
-#                 title=basename,
-
-#             )
-#         return None
+def create_lessons(request):
+    course_id = request.data.get('course', None)
+    videos = request.data.get('videos', None)
+    if videos:
+        videos = literal_eval(videos)
+        for video,i in zip(videos, range(len(videos))):
+            path, model = get_path_from_tmp(video)
+            course = Course.objects.get(course_id)
+            basename = os.path.splitext(model)[0]
+            new_path = new_upload_video_path(request, basename,course,i)
+            default_storage.copy(path, new_path)
+            default_storage.delete(path)
+            Lesson.create(
+                title=basename,
+                video=new_path,
+                course=course
+            )
+        return True
     
     
     
@@ -105,18 +115,45 @@ def tmp_to_storage(from_path, to_path):
 
 def get_poster_path(request):
     """ 
-    Возвращает путь к файлу в облаке и название файла
+    Возвращает путь к постеру в tmp/ и название файла
     Принимает:
         request - информация из фронта
 
     Возвращает:
-        path - путь к файлу
-        model.key - название файла
+        Результат выполнения функции get_path_from_tmp
     """ 
     id = int(request.data.get('poster', None) or -1)
     if id == -1:
         raise ParseError()
+    return get_path_from_tmp(id)
 
+def get_video_path(request):
+    """ 
+    Возвращает путь к видео в tmp/ и название файла
+    Принимает:
+        request - информация из фронта
+
+    Возвращает:
+        Результат выполнения функции get_path_from_tmp
+    """ 
+    id = int(request.data.get('video', None) or -1)
+    if id == -1:
+        raise ParseError()
+    return get_path_from_tmp()
+
+
+
+def get_path_from_tmp(id):
+    """
+    По id находит информацию о файле в бд. 
+    Из полученной информации формируется путь к временнему файлу.
+    Принимает:
+        id - id записи
+
+    Возвращает:
+        path - путь к файлу
+        model.key - название файла
+    """
     model = TmpFiles.objects.get(pk=id)
     
     path = f'tmp/{id}/{model.key}'

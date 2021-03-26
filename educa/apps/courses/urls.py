@@ -10,10 +10,10 @@ from .views import (CategoryListView,
 
 urlpatterns = [
     path('categories', CategoryListView.as_view(), name='category_list'),
+    path('courses', CourseListView.as_view(), name='all_course_list'),
     path('subcategories/<int:id>', SubcategoryListView.as_view(), name='subcategory_list'),
     path('courses/<slug:category>', CourseListView.as_view(), name='course_list'),
     path('courses/<slug:category>/<slug:subcategory>', CourseListView.as_view(), name='course_list_sub'),
-    path('courses', CourseListView.as_view(), name='all_course_list'),
     path('course/<int:pk>', CourseDetailView.as_view(), name='course_detail'),
     path('course/create', CourseDetailView.as_view(), name='course_create'),
     path('course/save', course_save, name='save_course'),

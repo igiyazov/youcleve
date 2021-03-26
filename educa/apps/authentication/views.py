@@ -37,6 +37,7 @@ class CustomUserCreateView(APIView):
         if serialized.is_valid():
             user = serialized.create(serialized.validated_data)
             user.profile = Profile()
+            breakpoint()
             return Response(serialized.data)
         return Response(serialized.errors, status=status.HTTP_409_CONFLICT)
 

@@ -72,6 +72,7 @@ class CustomUser(AbstractBaseUser):
         # Simplest possible answer: All admins are staff
         return self.is_admin
 
+
 class Profile(models.Model):
     custom_user = models.OneToOneField(CustomUser,
                                         related_name='profile',

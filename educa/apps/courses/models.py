@@ -11,6 +11,7 @@ from educa.apps.base.models import TimestampedModel
 
 class FilteredQuerySet(models.QuerySet):
     def recommended(self):
+        # breakpoint()
         return self.order_by('-likes')
 
     def popular(self):

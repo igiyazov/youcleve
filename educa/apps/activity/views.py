@@ -9,13 +9,24 @@ from .services import add_comment, add_or_remove_like, all_comments, all_likes_c
 from educa.apps.authentication.models import CustomUser
 from rest_framework import status
 from .serilizers import CommentSerializer
+from django.core.exceptions import ObjectDoesNotExist
 
 @api_view(['POST'])
 def add_like_course(request):
     user_id = request.data.get('user_id', None)
     course_id = request.data.get('course_id', None)
-    user = CustomUser.objects.get(pk=user_id)
-    course = Course.filtered.get(pk=course_id)
+    try:
+        user = CustomUser.objects.get(pk=user_id)
+    except ObjectDoesNotExist:
+        return Response({'detail': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    
+    try:
+        course = Course.filtered.get(pk=course_id)
+    except ObjectDoesNotExist:
+        return Response({'detail': 'Course does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    
+    course.likes = all_likes_count(course) + 1
+    course.save()
     if add_or_remove_like(course, user):
         return Response({'result':'liked'}, status=status.HTTP_200_OK)
     return Response({'result':'unliked'}, status=status.HTTP_200_OK)

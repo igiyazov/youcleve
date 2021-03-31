@@ -133,6 +133,7 @@ class Course(TimestampedModel):
     def save(self, *args, **kwargs): 
         super(Course, self).save(*args, **kwargs)
         self.slug = slugify(f'{self.title} {self.id}')
+        super(Course, self).save(update_fields=['slug'])
         
 
 class Lesson(TimestampedModel):

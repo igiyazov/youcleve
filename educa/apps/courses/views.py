@@ -83,6 +83,20 @@ class CourseDetailView(APIView):
             
         return Response(serialized_course.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def put(self, request, pk):
+        if not pk:
+            return Response({'detail':'Course id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            course = Course.filtered.get(pk=pk)
+        except ObjectDoesNotExist:
+            return Response({'detail':'Course does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        serialized_course = CourseDetailSerializer(data=request.data)
+        if serialized_course.is_valid():
+            serialized_course.update(course, serialized_course.validated_data)
+            return Response({'detail', 'Course updated'})
+        return Response(serialized_course.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
     def delete(self, request, pk):
         if not pk:
             return Response({'detail':'Course id is required'}, status=status.HTTP_400_BAD_REQUEST)

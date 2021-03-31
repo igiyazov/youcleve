@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from .services import PlainTextParser, create_lessons, delete_file_tmp, get_filtered, get_poster_path, new_poster_path, tmp_to_storage
 from rest_framework.exceptions import *
 from rest_framework.decorators import api_view, parser_classes
+from django.core.exceptions import ObjectDoesNotExist
 
 
 from .services import upload_file_tmp
@@ -57,10 +58,11 @@ class CourseDetailView(APIView):
 
     def post(self, request):    
         # breakpoint()
+        print(request.data)
         serialized_course = CourseDetailSerializer(data=request.data)
-        
+        # breakpoint()
         val = serialized_course.is_valid()
-        
+        # breakpoint()
         if serialized_course.is_valid():
             res = serialized_course.save()
             try:
@@ -73,7 +75,7 @@ class CourseDetailView(APIView):
             default_storage.copy(poster_path, new_path)
             default_storage.delete(poster_path)
             res.photo = new_path
-            create_lessons(request)
+            create_lessons(request, res)
             res.save()
             return Response('Course created successfully', status=status.HTTP_201_CREATED)
             # tmp_to_storage(request)
@@ -81,6 +83,17 @@ class CourseDetailView(APIView):
             
         return Response(serialized_course.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, pk):
+        if not pk:
+            return Response({'detail':'Course id is required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            course = Course.filtered.get(pk=pk)
+        except ObjectDoesNotExist:
+            return Response({'detail':'Course does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        course.draft = True
+        course.save()
+        return Response({'detail':'Course deleted'}, status=status.HTTP_200_OK)
+        
 
 
 class SubcategoryListView(APIView):
@@ -94,10 +107,14 @@ class SubcategoryListView(APIView):
 class LessonListView(APIView):
     """Запрос возвращает все уроки"""
     def get(self, request, course_id):
-        lesson = Lesson.objects.filter(draft=False) #TODO написать кастомный менеджр
-        if course_id:
-            lesson = lesson.filter(course__pk=course_id) 
-        serializer = LessonListSerializer(lesson, many=True)
+        try:
+            course = Course.objects.get(pk=course_id)
+        except ObjectDoesNotExist:
+            return Response({'detail':'Course doe not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        lessons = course.lessons.filter(draft=False).all()
+        # lesson = Lesson.objects.filter(draft=False) #TODO написать кастомный менеджр
+        serializer = LessonListSerializer(lessons, many=True)
         return Response(serializer.data)
 
 class LessonDetailView(APIView):

@@ -68,19 +68,17 @@ def delete_file_tmp(request):
     path = f'tmp/{id}/{model.key}'
     default_storage.delete(path)
 
-def create_lessons(request):
-    course_id = request.data.get('course', None)
+def create_lessons(request, course):
     videos = request.data.get('videos', None)
     if videos:
-        videos = literal_eval(videos)
+        # videos = literal_eval(videos)
         for video,i in zip(videos, range(len(videos))):
-            path, model = get_path_from_tmp(video)
-            course = Course.objects.get(course_id)
+            path, model = get_path_from_tmp(int(video))
             basename = os.path.splitext(model)[0]
             new_path = new_upload_video_path(request, basename,course,i)
             default_storage.copy(path, new_path)
             default_storage.delete(path)
-            Lesson.create(
+            Lesson.objects.create(
                 title=basename,
                 video=new_path,
                 course=course

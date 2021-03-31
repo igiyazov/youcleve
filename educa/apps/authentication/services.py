@@ -32,7 +32,8 @@ class CustomUserService:
     #TODO Optimize
     def all_user_courses(self):
         '''Собственные курсы определенного пользователя'''
-        resp = CourseListSerializer(self.user.courses_created, many=True)
+        courses = self.user.courses_created.all().filter(draft=False)
+        resp = CourseListSerializer(courses, many=True)
         return resp.data
 
     #TODO Optimize

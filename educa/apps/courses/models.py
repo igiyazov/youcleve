@@ -36,7 +36,8 @@ class FilteredQuerySet(models.QuerySet):
 
 class FilteredManager(models.Manager):
     def get_queryset(self):
-        return FilteredQuerySet(self.model, using=self._db)
+        return FilteredQuerySet(self.model, using=self._db)\
+                                .filter(draft=False)
 
     def recommended(self):
         return self.get_queryset().recommended()
@@ -59,7 +60,7 @@ class FilteredManager(models.Manager):
 class Level(models.Model):
     key = models.CharField(max_length=5)
     body = models.CharField(max_length=50)
-    draft = BooleanField(default=True)
+    draft = BooleanField(default=False)
 
     def __str__(self):
         return self.body
@@ -69,7 +70,7 @@ class Category(models.Model):
     slug = models.SlugField(max_length=200, unique=True)
     description = models.TextField(null=True, blank=True)
     photo = models.ImageField(null=True, upload_to='category/')
-    draft = models.BooleanField(default=True)
+    draft = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['title']
@@ -83,7 +84,7 @@ class Subcategory(models.Model):
                                 related_name='subcategories',
                                 on_delete=models.CASCADE)
     slug = models.SlugField(null=True)
-    draft = models.BooleanField(default=True)
+    draft = models.BooleanField(default=False)
 
     class Meta:
         ordering = ['title']
@@ -119,8 +120,8 @@ class Course(TimestampedModel):
         null=True,
         blank=True
     )
-    overview = models.TextField()
-    draft = models.BooleanField(default=True)
+    overview = models.TextField(null=True, blank=True)
+    draft = models.BooleanField(default=False)
 
 
     def __str__(self):
@@ -141,11 +142,11 @@ class Lesson(TimestampedModel):
     course = models.ForeignKey(Course, 
                                 related_name='lessons', 
                                 on_delete=models.CASCADE)
-    # video = models.FileField(blank=True) #TODO Написать фильтрацию видео файлов по директориям, а не в общую диркеторию
+    video = models.FileField(blank=True) 
     photo = models.ImageField(upload_to='photo/', null=True, blank=True)
     overview = models.TextField(null=True, blank=True)
     number = models.IntegerField(default=-1)
-    draft = models.BooleanField(default=True)
+    draft = models.BooleanField(default=False)
 
     @property
     def filename(self):
@@ -156,4 +157,4 @@ class Lesson(TimestampedModel):
         slug = f'{self.course.slug} {self.title} {self.id}'
         self.slug = slugify(slug) 
         self.title = self.filename
-        # super(Lesson, self).save(*args, **kwargs)
+        super(Lesson, self).save(update_fields=['slug'])

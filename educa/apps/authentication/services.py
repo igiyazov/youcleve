@@ -15,6 +15,7 @@ class CustomUserService:
             'saved':self.saved_courses,
             'followings':self.all_followings,
             'following-courses':self.all_followings_courses,
+            'purchases': self.all_purchases,
         }
         self.user = user
         self.param = param
@@ -46,6 +47,10 @@ class CustomUserService:
         '''Список всех подписок пользователя'''
         # breakpoint()
         resp = ProfileListSerializer(self.user.profile.followings.select_related('custom_user'), many=True)
+        return resp.data
+
+    def all_purchases(self):
+        resp = CourseListSerializer(self.user.profile.purchases, many=True)
         return resp.data
     
     #TODO Optimize. Now 60 hits to DB

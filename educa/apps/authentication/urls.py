@@ -9,8 +9,8 @@ from .views import (CustomUserCreateView, CustomUserListView,
                     ProfileDetailView, 
                     ProfileListView, 
                     get_profile_courses, 
-                    get_profile_info, is_profile_follow, 
-                    profile_follow, profile_unfollow, 
+                    get_profile_info, is_profile_follow, is_profile_purchase, 
+                    profile_follow, profile_purchase, profile_unfollow, 
                     )
 
 urlpatterns = [
@@ -23,6 +23,8 @@ urlpatterns = [
     path('profile/follow', profile_follow, name='profile_follow'),
     path('profile/unfollow', profile_unfollow, name='profile_unfollow'),
     path('profile/isfollow', is_profile_follow, name='is_profile_follow'),
+    path('profile/buy', profile_purchase, name='profile_purchase'),
+    path('profile/isbought', is_profile_purchase, name='is_profile_purchase'),
     path('profile/<int:pk>', ProfileDetailView.as_view(), name='profile_detail'),
     path('profile/<int:pk>/courses', get_profile_courses, name='profile_courses'),
     path('profile/<int:pk>/<slug:param>', get_profile_info, name='profile_info'),

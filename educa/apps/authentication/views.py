@@ -1,3 +1,4 @@
+from educa.apps.courses.models import Course
 from django.core.exceptions import ObjectDoesNotExist
 from jedi.api.completion import search_in_module
 from educa.apps.authentication.services import profile_info
@@ -192,73 +193,47 @@ def is_profile_follow(request):
     return Response({'detail':'followed'})
 
 
-# @api_view(['POST'])
-# # @permission_classes([permissions.IsAuthenticated])
-# def profile_purchase(request):
-#     user_id = request.data.get('user_id')
-#     follow_id = request.data.get('follow_id')
-#     if user_id == follow_id:
-#         return Response({'detail':'you can\'t subscribe to yourself'}, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['POST'])
+# @permission_classes([permissions.IsAuthenticated])
+def profile_purchase(request):
+    user_id = request.data.get('user_id')
+    course_id = request.data.get('course_id')
+    
+    if not (user_id and course_id):
+        return Response({'detail': 'Both user_id and course_id are required'}, status=status.HTTP_400_BAD_REQUEST)
 
-#     if not (user_id and follow_id):
-#         return Response({'detail': 'Both user_id and follow_id are required'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        user = CustomUser.objects.get(pk=user_id)
+        course = Course.objects.get(pk=course_id)
+    except ObjectDoesNotExist:
+        return Response({'detail': 'User and/or course user does not exist'})
 
-#     try:
-#         user = CustomUser.objects.get(pk=user_id)
-#         follow = CustomUser.objects.get(pk=follow_id)
-#     except ObjectDoesNotExist:
-#         return Response({'detail': 'User and/or following user does not exist'})
-
-#     user.profile.followings.add(follow.profile)
-#     return Response({'detail':'User followed'})
+    user.profile.purchases.add(course)
+    return Response({'detail':'Purchased'})
 
 
-# @api_view(['POST'])
-# # @permission_classes([permissions.IsAuthenticated])
-# def profile_unfollow(request):
-#     user_id = request.data.get('user_id')
-#     follow_id = request.data.get('follow_id')
-#     if user_id == follow_id:
-#         return Response({'detail':'you can\'t subscribe to yourself'}, status=status.HTTP_400_BAD_REQUEST)
+@api_view(['POST'])
+# @permission_classes([permissions.IsAuthenticated])
+def is_profile_purchase(request):
+    '''
+    куплен ли курс
+    '''
+    user_id = request.data.get('user_id')
+    course_id = request.data.get('course_id')
+    
+    if not (user_id and course_id):
+        return Response({'detail': 'Both user_id and course_id are required'}, status=status.HTTP_400_BAD_REQUEST)
 
-#     if not (user_id and follow_id):
-#         return Response({'detail': 'Both user_id and follow_id are required'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        user = CustomUser.objects.get(pk=user_id)
+        course = Course.objects.get(pk=course_id)
+    except ObjectDoesNotExist:
+        return Response({'detail': 'User and/or course user does not exist'})
 
-#     try:
-#         user = CustomUser.objects.get(pk=user_id)
-#         follow = CustomUser.objects.get(pk=follow_id)
-#     except ObjectDoesNotExist:
-#         return Response({'detail': 'User and/or unfollowing user does not exist'})
-#     print(user.profile.followings.all())
-#     user.profile.followings.remove(follow.profile)
-#     print(user.profile.followings.all())
-#     user.profile.save()
-#     return Response({'detail':'User unfollowed'})
-
-
-
-
-# @api_view(['POST'])
-# # @permission_classes([permissions.IsAuthenticated])
-# def is_profile_follow(request):
-#     user_id = request.data.get('user_id')
-#     follow_id = request.data.get('follow_id')
-#     if user_id == follow_id:
-#         return Response({'detail':'Similar ids'}, status=status.HTTP_400_BAD_REQUEST)
-
-#     if not (user_id and follow_id):
-#         return Response({'detail': 'Both user_id and follow_id are required'}, status=status.HTTP_400_BAD_REQUEST)
-
-#     try:
-#         user = CustomUser.objects.get(pk=user_id)
-#         follow = CustomUser.objects.get(pk=follow_id)
-#     except ObjectDoesNotExist:
-#         return Response({'detail': 'User and/or following user does not exist'})
-
-#     try:
-#         user.profile.followings.get(custom_user__id=follow_id)
-#     except ObjectDoesNotExist:
-#         return Response({'detail': 'notfollowed'})
-#     # user.profile.get()
-#     return Response({'detail':'followed'})
+    try:
+        user.profile.purchases.get(id=course_id)
+    except ObjectDoesNotExist:
+        return Response({'detail': 'notbought'})
+    # user.profile.get()
+    return Response({'detail':'bought'})
 

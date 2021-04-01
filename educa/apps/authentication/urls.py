@@ -9,9 +9,8 @@ from .views import (CustomUserCreateView, CustomUserListView,
                     ProfileDetailView, 
                     ProfileListView, 
                     get_profile_courses, 
-                    get_profile_info, 
-                    profile_follow, 
-                    profile_followings,
+                    get_profile_info, is_profile_follow, 
+                    profile_follow, profile_unfollow, 
                     )
 
 urlpatterns = [
@@ -22,7 +21,8 @@ urlpatterns = [
     path('user/login', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
     path('user/login/refresh', MyRefreshTokenView.as_view(), name='token_refresh'),
     path('profile/follow', profile_follow, name='profile_follow'),
-    path('profile/<int:pk>/follows', profile_followings, name='profile_follows'),
+    path('profile/unfollow', profile_unfollow, name='profile_unfollow'),
+    path('profile/isfollow', is_profile_follow, name='is_profile_follow'),
     path('profile/<int:pk>', ProfileDetailView.as_view(), name='profile_detail'),
     path('profile/<int:pk>/courses', get_profile_courses, name='profile_courses'),
     path('profile/<int:pk>/<slug:param>', get_profile_info, name='profile_info'),

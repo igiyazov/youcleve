@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from jedi.api.completion import search_in_module
 from educa.apps.authentication.services import profile_info
 from django.db import models
@@ -119,18 +120,37 @@ def get_profile_courses(request, pk):
 
 
 
-#FIXME Work incorrect
+
 @api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])
+# @permission_classes([permissions.IsAuthenticated])
 def profile_follow(request):
     user_id = request.data.get('user_id')
     follow_id = request.data.get('follow_id')
+    if user_id == follow_id:
+        return Response({'detail':'you can\'t subscribe to yourself'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if user_id and follow_id:
+    if not (user_id and follow_id):
+        return Response({'detail': 'Both user_id and follow_id are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
         user = CustomUser.objects.get(pk=user_id)
-        follow = CustomUser.objects.get(pk=user_id)
-        user.profile.followings.add(follow.profile)
+        follow = CustomUser.objects.get(pk=follow_id)
+    except ObjectDoesNotExist:
+        return Response({'detail': 'User and/or following user does not exist'})
 
-        return Response('ok')
+    user.profile.followings.add(follow.profile)
+    return Response({'detail':'User followed'})
+
+
+@api_view(['GET'])
+def profile_followings(request, pk):
+    try:
+        user = CustomUser.objects.get(pk=pk)
+    except ObjectDoesNotExist:
+        return Response({'detail': 'User doesn\'t exist'}, status.HTTP_404_NOT_FOUND)
     
-    return Response('not ok')
+    serialized = ProfileListSerializer(user.profile.followings, many=True)
+    # if serialized.is_valid():
+    return Response(serialized.data)
+    # return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
+

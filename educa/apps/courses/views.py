@@ -1,5 +1,6 @@
 from django.core.files.storage import default_storage
 from rest_framework.parsers import JSONParser, MultiPartParser
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from educa.apps.authentication.models import CustomUser
 from os import stat
 from django.shortcuts import render
@@ -50,9 +51,14 @@ class CourseListView(APIView, PaginationHandlerMixin):
         return Response(serializer.data)
 
 class CourseDetailView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     """Информация об одном курсу"""
     def get(self, request, pk):
-        courses = Course.filtered.get(pk=pk)
+        try:
+            courses = Course.filtered.get(pk=pk)
+        except ObjectDoesNotExist:
+            return Response({'detail':'Course does not exist'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = CourseDetailSerializer(courses)
         return Response(serializer.data)
 

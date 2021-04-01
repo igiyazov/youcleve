@@ -83,9 +83,9 @@ class Profile(models.Model):
     geo = models.TextField(blank=True, null=True)
     site = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, default='')
-    saved = models.ManyToManyField(to='courses.Course', related_name="saved_by", null=True, blank=True)
-    followings = models.ManyToManyField("self", related_name="followers", symmetrical=False, null=True, blank=True)
-
+    saved = models.ManyToManyField(to='courses.Course', related_name="saved_by", blank=True)
+    followings = models.ManyToManyField("self", related_name="followers", symmetrical=False, blank=True)
+    purchases = models.ManyToManyField(to='courses.Course', related_name='purchased_users', symmetrical=False, blank=True)
 
     def __str__(self):
         return self.custom_user.username

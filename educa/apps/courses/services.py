@@ -71,6 +71,7 @@ def delete_file_tmp(request):
 def create_lessons(request, course):
     videos = request.data.get('videos', None)
     if videos:
+        # breakpoint()
         # videos = literal_eval(videos)
         for video,i in zip(videos, range(len(videos))):
             path, model = get_path_from_tmp(int(video))

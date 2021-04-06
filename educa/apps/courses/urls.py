@@ -4,8 +4,13 @@ from .views import (CategoryListView,
                     CourseDetailView, 
                     CourseListView,   
                     LessonDetailView, 
-                    LessonListView, LevelListView, 
-                    SubcategoryListView, course_save, tmp
+                    LessonListView, 
+                    LevelListView, 
+                    SubcategoryListView, 
+                    course_save, 
+                    is_course_saved,
+                    tmp,
+                    delete_course_photo,
                     )
 
 urlpatterns = [
@@ -16,9 +21,11 @@ urlpatterns = [
     path('courses/<slug:category>/<slug:subcategory>', CourseListView.as_view(), name='course_list_sub'),
     path('course/<int:pk>', CourseDetailView.as_view(), name='course_detail'),
     path('course/<int:pk>/delete', CourseDetailView.as_view(), name='course_delete'),
+    path('course/<int:pk>/photo', delete_course_photo, name='delete_course_photo'),
     path('course/<int:pk>/put', CourseDetailView.as_view(), name='course_put'),
     path('course/create', CourseDetailView.as_view(), name='course_create'),
     path('course/save', course_save, name='save_course'),
+    path('course/issaved', is_course_saved, name='save_course'),
     path('lessons/<int:course_id>', LessonListView.as_view(), name='lesson_list'),
     path('lessons', LessonListView.as_view(), name='lesson_all_list'),
     path('lesson/<int:id>', LessonDetailView.as_view(), name='lesson_detail'),

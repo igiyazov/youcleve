@@ -1,25 +1,21 @@
 from django.core.files.storage import default_storage
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework import permissions
 from educa.apps.authentication.models import CustomUser
 from os import stat
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .services import PlainTextParser, create_lessons, delete_file_tmp, get_filtered, get_poster_path, new_poster_path, tmp_to_storage
-from rest_framework.exceptions import *
-from rest_framework.decorators import api_view, parser_classes
+from .services import PlainTextParser, create_lessons, delete_file_tmp, get_filtered, get_poster_path, new_poster_path, tmp_to_storage,delete_course_photo_from_server
+from rest_framework.decorators import api_view, parser_classes, permission_classes
 from django.core.exceptions import ObjectDoesNotExist
-
+from rest_framework import status
 
 from .services import upload_file_tmp
 from .pagination import PaginationHandlerMixin
-from .models import (Category, Level, Subcategory, Course, Lesson)
-from .serializers import (CategoryListSerializer,
-                        CourseDetailSerializer, 
-                        CourseListSerializer, LessonDetailSerializer, 
-                        LessonListSerializer, LevelListSerializer, 
-                        SubcategoryListSerializer)
+from .models import Category, Level, Subcategory, Course, Lesson
+from .serializers import CategoryListSerializer, CourseDetailSerializer, CourseListSerializer, LessonDetailSerializer, LessonListSerializer, LevelListSerializer, SubcategoryListSerializer
 
 
 
@@ -51,7 +47,7 @@ class CourseListView(APIView, PaginationHandlerMixin):
         return Response(serializer.data)
 
 class CourseDetailView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    # permission_classes = [IsAuthenticatedOrReadOnly]
 
     """Информация об одном курсу"""
     def get(self, request, pk):
@@ -190,13 +186,57 @@ def tmp(request):
 
 
 @api_view(['POST'])
+# @permission_classes([permissions.IsAuthenticated])
 def course_save(request):
     user_id = request.data.get('user_id')
-    obj_id = request.data.get('obj_id')
-
-    if user_id and obj_id:
+    course_id = request.data.get('course_id')
+    if not (user_id and course_id):
+        return Response({'detail': 'Both user_id and course_id are required'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
         user = CustomUser.objects.get(pk=user_id)
-        course = Course.objects.get(pk=obj_id)
-
+        course = Course.objects.get(pk=course_id)
+    except ObjectDoesNotExist:
+        return Response({'detail': 'User and/or course user does not exist'})
+    kkk = user.profile.saved.filter(pk=course.pk).exists()
+    if not user.profile.saved.filter(pk=course.id).exists():
         user.profile.saved.add(course)
-    return Response('ok')
+        return Response({'detail':'Course saved'})
+    else:
+        user.profile.saved.remove(course)
+        return Response({'detail':'Course unsaved'})
+
+@api_view(['POST'])
+# @permission_classes([permissions.IsAuthenticated])
+def is_course_saved(request):
+    '''
+    сохранён ли курс
+    '''
+    user_id = request.data.get('user_id')
+    course_id = request.data.get('course_id')
+    
+    if not (user_id and course_id):
+        return Response({'detail': 'Both user_id and course_id are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = CustomUser.objects.get(pk=user_id)
+        course = Course.objects.get(pk=course_id)
+    except ObjectDoesNotExist:
+        return Response({'detail': 'User and/or course user does not exist'})
+
+    try:
+        user.profile.saved.get(id=course_id)
+    except ObjectDoesNotExist:
+        return Response({'detail': 'notsaved'})
+    # user.profile.get()
+    return Response({'detail':'saved'})
+
+
+
+
+@api_view(['DELETE'])
+def delete_course_photo(request,pk):
+    # try:
+    delete_course_photo_from_server(pk)
+    # except Exception as e:
+    #     return Response(, status=status.HTTP_400_BAD_REQUEST)
+    return Response({'detail':'Photo deleted'}, status=status.HTTP_200_OK)

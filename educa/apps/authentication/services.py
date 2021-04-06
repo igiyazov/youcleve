@@ -71,3 +71,5 @@ def profile_info(user, param):
     return CustomUserService(user, param).get_queryset()
 
 
+
+

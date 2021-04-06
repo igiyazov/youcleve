@@ -138,7 +138,7 @@ def profile_follow(request):
         follow = CustomUser.objects.get(pk=follow_id)
     except ObjectDoesNotExist:
         return Response({'detail': 'User and/or following user does not exist'})
-
+    
     user.profile.followings.add(follow.profile)
     return Response({'detail':'User followed'})
 

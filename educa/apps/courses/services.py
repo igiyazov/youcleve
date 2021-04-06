@@ -53,7 +53,7 @@ def new_upload_video_path(request, filename, course, i):
       f'lesson_{i}',
       filename)
 
-#FIXME Если id повторится, возникнет ошибка
+
 def upload_file_tmp(request):
     ff = request.FILES.get('filepond')
     model = TmpFiles.objects.create(key=ff.name)
@@ -164,3 +164,12 @@ def new_poster_path(instance, filename):
     instance.subcategory.slug,
     instance.slug,
     filename)
+
+
+def delete_course_photo_from_server(id):
+    course = Course.objects.get(pk=id)
+    # breakpoint()
+    default_storage.delete(course.photo.name)
+    course.photo = None
+    course.save()
+        

@@ -134,7 +134,7 @@ class Course(TimestampedModel):
         super(Course, self).save(*args, **kwargs)
         self.slug = slugify(f'{self.title} {self.id}')
         super(Course, self).save(update_fields=['slug'])
-        
+
 
 class Lesson(TimestampedModel):
     title = models.CharField(max_length=1000)
@@ -143,15 +143,17 @@ class Lesson(TimestampedModel):
     course = models.ForeignKey(Course, 
                                 related_name='lessons', 
                                 on_delete=models.CASCADE)
-    video = models.FileField(blank=True) 
     photo = models.ImageField(upload_to='photo/', null=True, blank=True)
     overview = models.TextField(null=True, blank=True)
     number = models.IntegerField(default=-1)
+    size = models.PositiveIntegerField(default=0)
+    file_name = models.TextField(default=None, null=True)
+    video_format = models.CharField(max_length=50, null=True, blank=True)
     draft = models.BooleanField(default=False)
 
     @property
     def filename(self):
-        return os.path.basename(self.video.name)
+        return self.file_name or 'Unknown'
 
     def save(self, *args, **kwargs): 
         super(Lesson, self).save(*args, **kwargs)
@@ -159,3 +161,9 @@ class Lesson(TimestampedModel):
         self.slug = slugify(slug) 
         self.title = self.filename
         super(Lesson, self).save(update_fields=['slug'])
+
+
+class Resolution(models.Model):
+    resolution = models.CharField('Video resolution', max_length=20)
+    video = models.FileField(blank=True, max_length=1500) 
+    lesson = models.ForeignKey(Lesson, related_name='resolutions', on_delete=models.CASCADE)

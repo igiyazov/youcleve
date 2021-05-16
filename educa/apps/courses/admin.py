@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course,Category, Lesson, Level, Subcategory
+from .models import Course,Category, Lesson, Level, Subcategory, Resolution
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
@@ -22,15 +22,26 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['title', 'description']
     prepopulated_fields = {'slug': ('title',)}
 
+class ResolutionAdmin(admin.StackedInline):
+    model = Resolution
+    # list_display = ['lesson', 'resolution', 'video']
+
 @admin.register(Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ['title', 'slug', 'photo', 'video', 'duration', 'course', 'draft']
+    list_display = ['title', 'slug', 'photo', 'duration', 'course', 'draft']
     list_filter = ['title']
     search_fields = ['title', 'description']
     prepopulated_fields = {'slug': ('title',)}
+    inlines = [ResolutionAdmin]
 
 @admin.register(Level)
 class LevelAdmin(admin.ModelAdmin):
     list_display = ['key', 'body', 'draft']
     list_filter = ['body']
     search_fields = ['body']
+    
+
+
+
+
+

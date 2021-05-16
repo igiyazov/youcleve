@@ -1,7 +1,8 @@
 from rest_framework import serializers
+from rest_framework import permissions
 from educa.apps.authentication.models import CustomUser, Profile
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.postgres.search import SearchVector
 from rest_framework.response import Response
 from educa.apps.courses.models import Course
@@ -11,6 +12,7 @@ from django.contrib.postgres.search import TrigramSimilarity
 
 
 @api_view(['GET'])
+@permission_classes([permissions.AllowAny])
 def search(request):
     search_data = request.GET.get('search', [])
 
@@ -26,9 +28,12 @@ def search(request):
     # if course_tri:
     #     course = course.union(course_tri)
     
-    authors = Profile.objects.annotate(similarity=TrigramSimilarity('custom_user__username', search_data))\
-                                .filter(similarity__gt=0.3)\
-                                .order_by('-similarity')
+    # authors = Profile.objects.annotate(similarity=TrigramSimilarity('custom_user__username', search_data))\
+    #                             .filter(similarity__gt=0.3)\
+    #                             .order_by('-similarity')
+
+    authors = Profile.objects.filter(custom_user__username__icontains=search_data)
+
     # breakpoint()
     serialized_courses = CourseListSerializer(course, many=True)
     serialized_authors = ProfileListSerializer(authors, many=True)

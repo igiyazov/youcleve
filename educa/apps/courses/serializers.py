@@ -91,6 +91,9 @@ class LessonListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class LessonDetailSerializer(serializers.ModelSerializer):
+    videos = serializers.SerializerMethodField()
+    def get_videos(self, obj):
+        return [(str(res.resolution),res.video.url) for res in obj.resolutions.all()]
     class Meta:
         model = Lesson
         fields = '__all__'

@@ -7,16 +7,17 @@ from os import stat
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .services import PlainTextParser, create_lessons, delete_file_tmp, get_filtered, get_poster_path, new_poster_path, tmp_to_storage,delete_course_photo_from_server
+from .services import PlainTextParser, create_lessons, create_poster, delete_file_tmp, get_filtered, get_poster_path, new_poster_path
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
+from rest_framework.exceptions import ParseError
 
 from .services import upload_file_tmp
 from .pagination import PaginationHandlerMixin
 from .models import Category, Level, Subcategory, Course, Lesson
 from .serializers import CategoryListSerializer, CourseDetailSerializer, CourseListSerializer, LessonDetailSerializer, LessonListSerializer, LevelListSerializer, SubcategoryListSerializer
-
+import multiprocessing
 
 
 class CategoryListView(APIView):
@@ -67,17 +68,18 @@ class CourseDetailView(APIView):
         # breakpoint()
         if serialized_course.is_valid():
             res = serialized_course.save()
-            try:
-                poster_path, filename = get_poster_path(request)
-            except ParseError as e:
-                return Response(data = {'message':e.default_detail}, status=e.status_code)
-            except Exception as e:
-                return Response(e.msg)
-            new_path = new_poster_path(res, filename)               
-            default_storage.copy(poster_path, new_path)
-            default_storage.delete(poster_path)
-            res.photo = new_path
-            create_lessons(request, res)
+
+            # new_path = new_poster_path(res, filename)               
+            # default_storage.copy(poster_path, new_path)
+            # default_storage.delete(poster_path)
+            # res.photo = new_path
+
+            create_poster(request.data, res)
+                
+            
+            proc = multiprocessing.Process(target=create_lessons, args = (request.data, res))
+            proc.start()
+            # create_lessons(request, res)
             res.save()
             return Response('Course created successfully', status=status.HTTP_201_CREATED)
             # tmp_to_storage(request)

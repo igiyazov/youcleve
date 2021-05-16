@@ -1,12 +1,18 @@
-from educa.apps.courses.models import Category, Course, Lesson, Subcategory
+import django
+django.setup()
+from educa.apps.courses.models import Category, Course, Lesson, Subcategory, Resolution
 from django.core.files.storage import default_storage
 from educa.apps.base.models import TmpFiles
 from django.conf import settings
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import BaseParser
+from pathlib import Path
 import boto3
 import os
-from ast import literal_eval
+from educa.apps.base.utils import *
+import multiprocessing
+import shutil
+
 
 class PlainTextParser(BaseParser):
     media_type = 'text/plain'
@@ -36,12 +42,11 @@ def get_filtered(request,model):
     return model
 
 
-# def get_unsaved_course_slug
 
 
-def new_upload_video_path(request, filename, course, i):
-    category_id = request.data.get('category', None)
-    subcategory_id = request.data.get('subcategory', None)
+def new_upload_path(data, course, i):
+    category_id = data.get('category', None)
+    subcategory_id = data.get('subcategory', None)
     category = Category.objects.get(pk=category_id)
     subcategory = Subcategory.objects.get(pk=subcategory_id)
 
@@ -50,46 +55,160 @@ def new_upload_video_path(request, filename, course, i):
       subcategory.slug,
       course.slug, 
       'lessons', 
-      f'lesson_{i}',
-      filename)
+      f'lesson_{i}')
+
+
+def save_to_tmp(file, tmp_id):  
+    """ Записывает бинарный файл в папку tmp"""
+    directory_path = os.path.join(settings.TMP_VIDEO_PATH, str(tmp_id))
+    Path(directory_path).mkdir(parents=True, exist_ok=True)
+    new_file_full_path = os.path.join(directory_path, file.name)
+    fd = os.open(new_file_full_path, os.O_WRONLY|os.O_CREAT)
+
+    try:
+        current_chunk = None
+        while current_chunk != b'':
+            current_chunk = file.read(settings.TMP_VIDEO_CHUNK_SIZE)
+            os.write(fd, current_chunk)
+    finally:
+        os.close(fd)
 
 
 def upload_file_tmp(request):
     ff = request.FILES.get('filepond')
     model = TmpFiles.objects.create(key=ff.name)
     path = os.path.join('tmp', str(model.id), ff.name)
-    filename = default_storage.save(path, ff)
-    newpath = os.path.join(settings.MEDIA_URL, filename)
+    save_to_tmp(ff, model.id)
+    # filename = default_storage.save(path, ff)
+    # newpath = os.path.join(settings.MEDIA_URL, filename)
+    # duration = probe(newpath)
     return model.id
 
-def delete_file_tmp(request):
-    id = int(request.data)
-    model = TmpFiles.objects.get(pk=id)
-    path = f'tmp/{id}/{model.key}'
-    default_storage.delete(path)
+def get_ffmpeg_resol_text(resol, path, filename):
+    res_path = os.path.join(path,resol)
+    Path(res_path).mkdir(parents=True, exist_ok=True)
+    filepath = os.path.join(path, resol, filename)
+    ffmpeg_resol = settings.VIDEO_RESOLUTION[resol]
+    return (['-s', ffmpeg_resol, '-acodec', 'copy', filepath], filepath)
 
-def create_lessons(request, course):
-    videos = request.data.get('videos', None)
+def get_cmd_text(path, filename):
+    file_path=os.path.join(path,filename)
+    cmd = ['ffmpeg', '-i', file_path]
+    paths = []
+    current_resolution = get_video_resolution(file_path)
+    for key in settings.VIDEO_RESOLUTION:
+        if current_resolution >= int(key):
+            resol_text, resol_path = get_ffmpeg_resol_text(key, path, filename)
+            cmd.extend(resol_text)
+            paths.append(resol_path)
+    return (cmd,paths)
+
+
+# def popenAndCall(onExit, popen_args, on_exit_args):
+#     def runInThread(onExit, popen_args, on_exit_args):
+#         proc = subprocess.Popen(popen_args)
+#         proc.wait()
+#         onExit(**on_exit_args)
+#         return
+#     proc = multiprocessing.Process(target=runInThread, args = (onExit, popen_args, on_exit_args,))
+#     proc.start()
+#     return proc
+
+def runInThread(onExit, popen_args, on_exit_args):
+    proc = subprocess.run(popen_args)
+    # proc.wait()
+    onExit(**on_exit_args)
+
+
+def create_video_resolutions(path, new_path, filename):
+    """ 
+    Создаёт видео в более низких разрешениях и сохраняет в storage
+    """
+    cmd, paths = get_cmd_text(path, filename)
+
+    # proc = multiprocessing.Process(target=runInThread, args = (save_files_on_storage, cmd, on_exit_args))
+    # proc.start()
+    proc = subprocess.run(cmd)
+    
+
+
+
+def save_files_on_storage(path, new_path, filename):
+    paths=[]
+    resolutions=[]
+    for key in settings.VIDEO_RESOLUTION:
+        file_path = Path(path, key, filename)
+        if not file_path.exists():
+            continue
+        
+        with open(file_path, 'rb') as file:
+            full_new_path = os.path.join(new_path,key,filename)
+            default_storage.save(full_new_path, file)
+        paths.append(full_new_path)
+        resolutions.append(key)
+    return (paths, resolutions)
+
+def delete_file_tmp(path, id):
+    dir_path = Path(path)
+    instance = TmpFiles.objects.get(id=id)
+    instance.delete()
+    try:
+        shutil.rmtree(dir_path, ignore_errors=True)
+    except OSError as e:
+        print("Error: %s : %s" % (dir_path, e.strerror))
+
+
+def create_resolution_records(lesson, resolution_paths, resolutions):
+    for path, resolution in zip(resolution_paths, resolutions):
+        res = Resolution.objects.create(
+            resolution=resolution,
+            lesson=lesson,
+            video=path
+        )
+
+
+
+def create_lessons(data, course):
+    videos = data.get('videos', None)
     if videos:
-        # breakpoint()
-        # videos = literal_eval(videos)
         for video,i in zip(videos, range(len(videos))):
-            path, model = get_path_from_tmp(int(video))
-            basename = os.path.splitext(model)[0]
-            new_path = new_upload_video_path(request, basename,course,i)
-            default_storage.copy(path, new_path)
-            default_storage.delete(path)
-            Lesson.objects.create(
+            path, filename = get_path_from_tmp(int(video))
+            dirname = os.path.dirname(path)
+            basename, video_format = get_basename_n_format(filename)
+            new_path = new_upload_path(data,course,i)
+            duration = get_video_duration(path)
+            create_video_resolutions(dirname, new_path, filename)
+            paths, resolutions = save_files_on_storage(dirname, new_path, filename)
+            delete_file_tmp(dirname, video)
+            lesson = Lesson.objects.create(
                 title=basename,
-                video=new_path,
-                course=course
+                course=course,
+                video_format=video_format,
+                file_name=filename,
+                duration=duration,
             )
+            create_resolution_records(lesson, paths, resolutions)
         return True
     
     
-    
 
+def create_poster(data, res):
+    """ 
+    Функция переносит постер из tmp в storage
+    data - это request.data
+    res - serialized.data
+    """
+    tmp_id = data.get('poster', None)
+    if not tmp_id:
+        return False
+    path, filename = get_poster_path(data)
+    dirname = os.path.dirname(path)
+    new_path = new_poster_path(res, filename)  
+    default_storage.save_from_path(path, new_path)
 
+    delete_file_tmp(dirname, tmp_id)
+    res.photo = new_path
+    return True
 
 
 def tmp_to_storage(from_path, to_path):
@@ -112,7 +231,7 @@ def tmp_to_storage(from_path, to_path):
 #         Lesson
 
 
-def get_poster_path(request):
+def get_poster_path(data):
     """ 
     Возвращает путь к постеру в tmp/ и название файла
     Принимает:
@@ -121,7 +240,7 @@ def get_poster_path(request):
     Возвращает:
         Результат выполнения функции get_path_from_tmp
     """ 
-    id = int(request.data.get('poster', None) or -1)
+    id = int(data.get('poster', -1))
     if id == -1:
         raise ParseError()
     return get_path_from_tmp(id)
@@ -155,7 +274,7 @@ def get_path_from_tmp(id):
     """
     model = TmpFiles.objects.get(pk=id)
     
-    path = f'tmp/{id}/{model.key}'
+    path = f'{settings.TMP_VIDEO_PATH}/{id}/{model.key}'
     return (path, model.key)
 
 

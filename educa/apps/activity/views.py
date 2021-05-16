@@ -1,15 +1,16 @@
 from django.http.response import HttpResponse
 from rest_framework.response import Response
 from rest_framework import response, serializers
-from educa.apps.courses.models import Course
+from educa.apps.courses.models import Course, Lesson
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from .services import add_comment, add_or_remove_like, all_comments, all_likes_count, is_liked
 from educa.apps.authentication.models import CustomUser
 from rest_framework import status
-from .serilizers import CommentSerializer
+from .serilizers import CommentSerializer, SubscriptionSerializer
 from django.core.exceptions import ObjectDoesNotExist
+from .models import Subscription, ViewCourse, ViewLesson
 
 @api_view(['POST'])
 def add_like_course(request):
@@ -61,6 +62,55 @@ class CommentDetailView(APIView):
         add_comment(course, user, text)
         return Response({'status':'ok'}, status = status.HTTP_200_OK)
 
+
+class SubscriptionDetailView(APIView):
+    def get(self, request, user_id):
+
+        try:
+            user = CustomUser.objects.get(pk=user_id)
+        except Exception:
+            return Response({'detail': 'user not exist'})
+        
+        if user.subscription.exists():
+            serialized = SubscriptionSerializer(user.subscription.all()[:1].get())
+            return Response({'detail':'subed', 'result':serialized.data})
+        else:
+            return Response({'detail':'notsubed'})
+
+    def post(self, request):
+        user_id = request.data.get('user')
+        try:
+            user = CustomUser.objects.get(pk=user_id)
+        except Exception:
+            return Response({'detail': 'user not exist'})
+        
+        if user.subscription.exists():
+            return Response({'detail':'alsubed'})
+        serilized = SubscriptionSerializer(data=request.data)
+        
+        if serilized.is_valid():
+            serilized.save()
+            return Response({'detail':'ok'}, status=status.HTTP_201_CREATED)
+        
+        return Response({'detail':'error', 'result':serilized.errors})
+        
+
+
+@api_view(['POST'])
+def add_view(request):
+    course_id = request.data.get('course_id', None)
+    lesson_id = request.data.get('lesson_id', None)
+    user_id = request.data.get('user_id', None)
+    course = Course.objects.get(id=course_id)
+    lesson = Lesson.objects.get(id=lesson_id)
+    user = CustomUser.objects.get(id=user_id)
+    obj, created = ViewCourse.objects.get_or_create(user=user, course=course)
+    view_lesson, les_created = ViewLesson.objects.get_or_create(lesson = lesson, view_course=obj)
+    if les_created:
+        obj.viewed_lessons += 1
+        obj.percentage = (100/course.lessons.count()) * obj.viewed_lessons
+        obj.save()
+    return Response({'status':created})
 
 # @api_view(['POST'])
 # def add_like_course(request):

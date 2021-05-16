@@ -9,11 +9,11 @@ educa.dump
 latest.dump
 local.sql
 my_database.sql
+django_migrations.sql
 
 #educa
-settings/settings.py
 __pycache__
 **/__pycache__/
 **/__pycache__
 
-celerybeat-schedule
+

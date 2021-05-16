@@ -4,8 +4,6 @@ import json
 from django.conf import settings
 import datetime
 import cv2
-from moviepy.editor import *
-import moviepy
 
 def get_basename(path):
     '''

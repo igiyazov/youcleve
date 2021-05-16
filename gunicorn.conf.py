@@ -6,7 +6,7 @@ user='www'
 capture_output=True
 
 raw_env=[
-'DJANGO_SETTINGS_MODULE=educa.settings.prod',
+'DJANGO_SETTINGS_MODULE=educa.settings.settings',
 'SECRET_KEY=pm0_l$n%oy9$z7c5%+ae6#8#9rl_p#8v0l6ngc6j!2#dd7sok',
 'DB_NAME=youclevedb',
 'DB_USER=youcleverole',

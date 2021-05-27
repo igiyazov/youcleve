@@ -110,7 +110,19 @@ def add_view(request):
         obj.viewed_lessons += 1
         obj.percentage = (100/course.lessons.count()) * obj.viewed_lessons
         obj.save()
+        course.views += 1
+        course.save()
     return Response({'status':created})
+
+# @api_view(['POST'])
+# def all_views(request):
+#     course_id = request.data.get('course_id', None)
+#     if not course_id:
+#         return Response({'status' : 'course_id required'}, status=status.HTTP_400_BAD_REQUEST)
+
+#     course = Course.objects.get(id=course_id)
+#     return Response(course.viewed.count())
+
 
 # @api_view(['POST'])
 # def add_like_course(request):

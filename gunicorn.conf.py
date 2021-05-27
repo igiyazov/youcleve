@@ -3,6 +3,7 @@ pythonpath='/home/www/project/youcleve/v1/youcleve/'
 bind='unix:/run/gunicorn.sock'
 workers=5
 user='www'
+timeout=600
 capture_output=True
 
 raw_env=[

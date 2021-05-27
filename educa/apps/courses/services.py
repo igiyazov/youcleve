@@ -12,7 +12,7 @@ import os
 from educa.apps.base.utils import *
 import multiprocessing
 import shutil
-
+from datetime import timedelta
 
 class PlainTextParser(BaseParser):
     media_type = 'text/plain'
@@ -187,7 +187,9 @@ def create_lessons(data, course):
                 file_name=filename,
                 duration=duration,
             )
+            course.course_duration += duration
             create_resolution_records(lesson, paths, resolutions)
+        # course.course_duration = 
         return True
     
     

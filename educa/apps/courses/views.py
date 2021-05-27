@@ -80,8 +80,8 @@ class CourseDetailView(APIView):
             
             # proc = multiprocessing.Process(target=create_lessons, args = (request.data, res))
             # proc.start()
-            # create_lessons(request, res)
-            async_create_lessons.delay(request.data, res.id)
+            create_lessons(request.data, res)
+            # async_create_lessons.delay(request.data, res.id)
             res.save()
             return Response('Course created successfully', status=status.HTTP_201_CREATED)
             # tmp_to_storage(request)

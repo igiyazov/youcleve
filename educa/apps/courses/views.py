@@ -7,7 +7,7 @@ from os import stat
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .services import PlainTextParser, create_lessons, create_poster, delete_file_tmp, get_filtered, get_poster_path, new_poster_path
+from .services import PlainTextParser, create_lessons, create_poster, delete_course_photo_from_server, delete_file_tmp, get_filtered, get_poster_path, new_poster_path
 from rest_framework.decorators import api_view, parser_classes, permission_classes
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
@@ -18,6 +18,7 @@ from .pagination import PaginationHandlerMixin
 from .models import Category, Level, Subcategory, Course, Lesson
 from .serializers import CategoryListSerializer, CourseDetailSerializer, CourseListSerializer, LessonDetailSerializer, LessonListSerializer, LevelListSerializer, SubcategoryListSerializer
 import multiprocessing
+from .tasks import async_create_lessons
 
 
 class CategoryListView(APIView):
@@ -77,9 +78,10 @@ class CourseDetailView(APIView):
             create_poster(request.data, res)
                 
             
-            proc = multiprocessing.Process(target=create_lessons, args = (request.data, res))
-            proc.start()
+            # proc = multiprocessing.Process(target=create_lessons, args = (request.data, res))
+            # proc.start()
             # create_lessons(request, res)
+            async_create_lessons.delay(request.data, res.id)
             res.save()
             return Response('Course created successfully', status=status.HTTP_201_CREATED)
             # tmp_to_storage(request)

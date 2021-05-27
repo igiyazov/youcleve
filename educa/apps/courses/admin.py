@@ -3,7 +3,7 @@ from .models import Course,Category, Lesson, Level, Subcategory, Resolution
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ['owner', 'subcategory', 'slug', 'course_duration', 'rating', 'views', 'photo', 'likes', 'price', 'overview', 'draft']
+    list_display = ['owner', 'subcategory', 'slug', 'course_duration', 'rating', 'views', 'photo', 'likes', 'overview', 'draft']
     list_filter = ['created_at', 'subcategory']
     search_fields = ['title', 'overview']
     prepopulated_fields = {'slug': ('title',)}

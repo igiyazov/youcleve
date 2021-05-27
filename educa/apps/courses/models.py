@@ -112,7 +112,7 @@ class Course(TimestampedModel):
     views = models.PositiveIntegerField(default=0)
     photo = models.ImageField(null=True, upload_to=f'courses/{title}')
     likes = models.PositiveIntegerField(default=0)
-    price = models.PositiveIntegerField(null=True)
+    # price = models.PositiveIntegerField(null=True)
     level = models.ForeignKey(
         Level,
         related_name='courses',

@@ -107,7 +107,7 @@ class Course(TimestampedModel):
                                 null=True)
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True, null=True)
-    course_duration = models.DurationField(null=True, default=0)
+    course_duration = models.DurationField(default=timedelta())
     rating = models.FloatField(default=0)
     views = models.PositiveIntegerField(default=0)
     photo = models.ImageField(null=True, upload_to=f'courses/{title}')

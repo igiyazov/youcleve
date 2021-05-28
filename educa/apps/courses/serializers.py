@@ -24,21 +24,24 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 class CourseListSerializer(serializers.ModelSerializer):
     lessons_count = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
-    duration = serializers.SerializerMethodField()
+    # duration = serializers.SerializerMethodField()
     username = serializers.SerializerMethodField()
     def get_lessons_count(self, obj):
         return Course.objects.get(pk=obj.id).lessons.count()
 
     def get_likes_count(self, obj):
-        return all_likes_count(obj)
+        likes_count = all_likes_count(obj)
+        obj.likes = likes_count
+        obj.save()   
+        return likes_count
 
-    def get_duration(self, obj):
-        time = Course.objects.get(pk=obj.id)\
-                    .lessons\
-                    .aggregate(dur=Sum('duration')).get('dur', 0)
-        if time:
-            time = time.total_seconds()
-        return time
+    # def get_duration(self, obj):
+    #     time = Course.objects.get(pk=obj.id)\
+    #                 .lessons\
+    #                 .aggregate(dur=Sum('duration')).get('dur', 0)
+    #     if time:
+    #         time = time.total_seconds()
+    #     return time
 
     def get_username(self, obj):
         try:

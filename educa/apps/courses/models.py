@@ -12,18 +12,17 @@ from educa.apps.base.models import TimestampedModel
 class FilteredQuerySet(models.QuerySet):
     def recommended(self):
         # breakpoint()
-        return self.order_by('likes')
+        return self.order_by('-likes')
 
     def popular(self):
         return self.order_by('-views')
 
     def duration(self, arrow):
-        res = self.annotate(duration=Sum('lessons__duration'))
+        # res = self.annotate(duration=Sum('lessons__duration'))
         if arrow == 'UP':
-            res = res.order_by('duration')
+            return self.order_by('course_duration')
         else:
-            res = res.order_by('-duration')
-        return res
+            return self.order_by('-course_duration') 
     
     def for_children(self):
         return self.filter(level__key='CH')

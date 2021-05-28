@@ -1,6 +1,6 @@
 from educa.apps.courses.serializers import CategoryDetailSerializer
 from django.urls import path
-from .views import (CategoryListView,
+from .views import (AllSubcategoryListView, CategoryListView,
                     CourseDetailView, 
                     CourseListView,   
                     LessonDetailView, 
@@ -17,6 +17,7 @@ urlpatterns = [
     path('categories', CategoryListView.as_view(), name='category_list'),
     path('courses', CourseListView.as_view(), name='all_course_list'),
     path('subcategories/<int:id>', SubcategoryListView.as_view(), name='subcategory_list'),
+    path('allsubcategories/<int:id>', AllSubcategoryListView.as_view(), name='subcategory_list'),
     path('courses/<slug:category>', CourseListView.as_view(), name='course_list'),
     path('courses/<slug:category>/<slug:subcategory>', CourseListView.as_view(), name='course_list_sub'),
     path('course/<int:pk>', CourseDetailView.as_view(), name='course_detail'),

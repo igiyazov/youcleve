@@ -1,3 +1,4 @@
+from functools import partial
 from educa.apps.courses.models import Course
 from django.core.exceptions import ObjectDoesNotExist
 from jedi.api.completion import search_in_module
@@ -71,6 +72,16 @@ class ProfileDetailView(APIView):
         if serializer_profile:
             result = {**serializer_user.data, **serializer_profile.data}
         return Response(result)
+
+    def put(self, request, pk):
+        user = CustomUser.objects.get(pk = pk)
+        serialized_user =  CustomUserDetailSerializer(user, data=request.data, partial=True)
+        serialized_profile = ProfileDetailSerializer(user.profile, data=request.data, partial=True)
+        if serialized_user.is_valid() and serialized_profile.is_valid():
+            serialized_user.save()
+            serialized_profile.save()
+            return Response({'message': 'good'})
+        return Response([serialized_user.errors])
 
 #TODO Paginate
 class ProfileListView(APIView):

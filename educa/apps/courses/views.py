@@ -17,9 +17,8 @@ from .services import upload_file_tmp
 from .pagination import PaginationHandlerMixin
 from .models import Category, Level, Subcategory, Course, Lesson
 from .serializers import CategoryListSerializer, CourseDetailSerializer, CourseListSerializer, LessonDetailSerializer, LessonListSerializer, LevelListSerializer, SubcategoryListSerializer
-import multiprocessing
 from .tasks import async_create_lessons
-
+from django.db.models import Count
 
 class CategoryListView(APIView):
     def get(self, request):
@@ -117,12 +116,31 @@ class CourseDetailView(APIView):
 
 
 class SubcategoryListView(APIView):
-    """Запрос возвращает все подкатегории"""
+    """
+    Запрос возвращает подкатегории, где есть курсы
+    """
+    def get(self, request, id):
+        subcategory = Subcategory.objects\
+                                .filter(draft=False)\
+                                .filter(category__id=id)\
+                                .annotate(num_courses=Count('courses'))\
+                                .filter(num_courses__gt=0)
+        # subcategory = Subcategory.objects.filter(draft=False)\
+        #                                     .filter(category__id=id) #TODO написать кастомный менеджр
+        serializer = SubcategoryListSerializer(subcategory, many=True)
+        return Response(serializer.data)
+
+class AllSubcategoryListView(APIView):
+    """
+    Запрос возвращает подкатегории, где есть курсы
+    """
     def get(self, request, id):
         subcategory = Subcategory.objects.filter(draft=False)\
                                             .filter(category__id=id) #TODO написать кастомный менеджр
         serializer = SubcategoryListSerializer(subcategory, many=True)
         return Response(serializer.data)
+
+
 
 class LessonListView(APIView):
     """Запрос возвращает все уроки"""

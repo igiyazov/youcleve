@@ -188,6 +188,7 @@ def create_lessons(data, course):
                 duration=duration,
             )
             course.course_duration += duration
+            course.save()
             create_resolution_records(lesson, paths, resolutions)
         course.save()
         return True

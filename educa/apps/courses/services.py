@@ -187,8 +187,8 @@ def create_lessons(data, course):
                 file_name=filename,
                 duration=duration,
             )
-            course.course_duration += duration
-            course.save()
+            # course.course_duration += duration
+            # course.save()
             create_resolution_records(lesson, paths, resolutions)
         course.save()
         return True

@@ -159,7 +159,7 @@ class Lesson(TimestampedModel):
         slug = f'{self.course.slug} {self.title} {self.id}'
         self.slug = slugify(slug) 
         self.title = self.filename
-        self.course.course_duration += self.duration
+        # self.course.course_duration += self.duration
         super(Lesson, self).save(update_fields=['slug'])
 
 

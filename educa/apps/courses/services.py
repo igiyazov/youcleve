@@ -13,6 +13,7 @@ from educa.apps.base.utils import *
 import multiprocessing
 import shutil
 from datetime import timedelta
+from pprint import pprint
 
 class PlainTextParser(BaseParser):
     media_type = 'text/plain'
@@ -169,6 +170,7 @@ def create_resolution_records(lesson, resolution_paths, resolutions):
 
 
 def create_lessons(data, course):
+    pprint(course)
     videos = data.get('videos', None)
     if videos:
         for video,i in zip(videos, range(len(videos))):
@@ -187,7 +189,13 @@ def create_lessons(data, course):
                 file_name=filename,
                 duration=duration,
             )
-            # course.course_duration += duration
+            print(f'course_duration: {course.course_duration}')
+            print(f'duration: {duration}')
+            # pprint()
+            course.course_duration += duration
+            print(f'course_duration: {course.course_duration}')
+            
+            pprint(lesson)
             # course.save()
             create_resolution_records(lesson, paths, resolutions)
         course.save()

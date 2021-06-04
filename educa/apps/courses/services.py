@@ -170,7 +170,7 @@ def create_resolution_records(lesson, resolution_paths, resolutions):
 
 
 def create_lessons(data, course):
-    pprint(course)
+    # pprint(course)
     videos = data.get('videos', None)
     if videos:
         for video,i in zip(videos, range(len(videos))):
@@ -189,13 +189,13 @@ def create_lessons(data, course):
                 file_name=filename,
                 duration=duration,
             )
-            print(f'course_duration: {course.course_duration}')
-            print(f'duration: {duration}')
+            # print(f'course_duration: {course.course_duration}')
+            # print(f'duration: {duration}')
             # pprint()
             course.course_duration += duration
-            print(f'course_duration: {course.course_duration}')
+            # print(f'course_duration: {course.course_duration}')
             
-            pprint(lesson)
+            # pprint(lesson)
             # course.save()
             create_resolution_records(lesson, paths, resolutions)
         course.save()

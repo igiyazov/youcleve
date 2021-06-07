@@ -137,7 +137,7 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 
-# ************************************#
+#************************************#
 
 # MEDIA_ROOT = BASE_DIR / 'educa/media/'
 
